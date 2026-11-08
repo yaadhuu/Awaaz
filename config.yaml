@@ -7,7 +7,6 @@ models:
   stt: prisma-v3.0
   tts: timbre-v3.0
 
-voices: null  # must come from the timbre-v3.0 voice catalog; not chosen yet
 
 tts_speeds: [0.85, 1.0, 1.15]
 
@@ -49,3 +48,22 @@ seeds:
   split: 1108
   link: 2026
   bootstrap: 7
+
+tier_picker:
+  audio_max_loss_percent: 10  # above this, audio is too damaged to trust
+  text_max_airtime_s: 10      # longest we accept to send a transcript before falling back to facts
+
+pilot:
+  messages_per_language: 10
+  voice_index: 0
+  speed: 1.0
+  split: dev
+
+voices: [Vasudha, Avinash, Lakshmi]  # timbre-v3.0 voices: two female, one male
+stt_conditions: [off, both]          # context off; keyterms + topic. (also: keyterms, topic)
+tts_audio_config:
+  sample_rate: 16000
+  encoding: linear_pcm
+  num_channels: 1
+  sample_width: 2
+  container: wav

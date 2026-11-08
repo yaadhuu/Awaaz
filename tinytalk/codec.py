@@ -79,3 +79,13 @@ def opus_decode(data: bytes, rate: int) -> Pcm:
     cmd = ["ffmpeg", "-v", "error", "-i", "-", "-f", "s16le", "-ar", str(rate), "-ac", "1", "-"]
     out = subprocess.run(cmd, input=data, capture_output=True, check=True).stdout
     return np.frombuffer(out, dtype="<i2")
+
+
+def c2_decode_with_loss(chunks: list[bytes | None], frames_per_chunk: int = 8) -> Pcm:
+    """Decode received chunks; a lost chunk (None) becomes silence of the same length."""
+    n = Codec2(C2_MODE).samples_per_frame()
+    parts = [
+        c2_decode(c) if c is not None else np.zeros(frames_per_chunk * n, dtype=np.int16)
+        for c in chunks
+    ]
+    return np.concatenate(parts) if parts else np.zeros(0, dtype=np.int16)
