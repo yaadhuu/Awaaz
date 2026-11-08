@@ -24,7 +24,7 @@ pytest passes, the web build passes, a Playwright smoke test passes and the READ
 ## Environment notes
 
 - Windows 11, Git Bash. Python venv at .venv (Python 3.14); web app in web/ (Vite, React, TypeScript, Tailwind, shadcn).
-- Codec2 built with MinGW at tools/codec2/build/src (c2enc.exe, c2dec.exe). MinGW and cmake are not on the default PATH.
+- Codec2: pycodec2 is the primary path (no build). tools/codec2 (MinGW build, c2enc.exe/c2dec.exe) is only a fallback. MinGW and cmake are not on the default PATH.
 
 ## Tool usage guide
 
@@ -38,3 +38,13 @@ pytest passes, the web build passes, a Playwright smoke test passes and the READ
 - Frontend: Noto Sans fonts imported, react-query for server state, i18next for ml/hi/en, framer-motion for the tier-switch animation, @ricky0123/vad-web for end-of-speech, vitest and testing-library for components, Playwright for e2e.
 - Plugins and skills, when to use: feature-dev at the start of a stage to design it; superpowers for planning, test-first and debugging; security-guidance and code-review before each stage's final commit; commit-commands for commits; ui-ux-pro-max only in Stage 11.
 - Do not add a library that is not listed here without logging a decision in docs/DECISIONS.md.
+
+## Working mode (set by Yadhu, overrides docs/BUILD_PLAYBOOK.md process rules)
+
+Build fast. Do not stop at stage gates, do not write per-stage plan files, do not wait for approval, do not ask questions unless truly blocked. Keep going stage by stage and make sensible choices, logging them in docs/DECISIONS.md. Keep diary/decision/experiment/cost notes short and update them at milestones, not every step. Checks (ruff, mypy, pytest) still run before commits so the repo stays green.
+
+Hard limits that stay (they protect the project, they do not slow it): never commit or print the API key; commits are authored by yaadhuu only, with no Claude co-author line; every Gnani call goes through tinytalk/gnani.py with its cache, ledger and call cap; never claim a real radio test; numbers in docs come from real outputs.
+
+## Diary format (docs/DIARY.md)
+
+Entry header: `## <date time IST> - <title>`, then bullets: What we did / Why / How it works (3 plain sentences) / Files touched / Result (real numbers) / Limits / What Yadhu should say / Git commit hash. Get the time from PowerShell: `[System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([datetime]::UtcNow,'UTC','India Standard Time')`. Never guess it.

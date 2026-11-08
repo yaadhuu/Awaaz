@@ -6,3 +6,8 @@ dist
 tools/codec2
 out/
 .claude/settings.local.json
+cache/
+data/audio/
+*.wav
+*.mp3
+.coverage
