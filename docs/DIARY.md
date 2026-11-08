@@ -4,8 +4,10 @@ Newest entry at the bottom. Format and rules are in `CLAUDE.md`.
 
 ## Open questions
 
-- Goal and scope are not written down in any file yet. Yadhu to state them so the diary and STORY.md can open with the real problem statement. (Added 2026-11-08)
-- Where will the Gnani call ledger live (file path and format)? `docs/COSTS.md` reads from it, and no ledger exists yet. (Added 2026-11-08)
+- `docs/NORTH_STAR.md` does not exist, but `docs/BUILD_PLAYBOOK.md` tells every stage to read it. It must hold the goal, the module layout, and the Malayalam rule (≥85% exact facts). Yadhu to provide it. (Added 2026-11-08)
+- Build freeze time is not set. Deadline in the playbook is 11:59 PM IST, Tue 10 Nov 2026. Yadhu to pick a freeze time. (Added 2026-11-08)
+- Gnani credit-to-call conversion rate and the pilot and main-run credit budgets are not given. Stages 4 and 5 need them. (Added 2026-11-08)
+- Ledger format is JSONL (playbook Stage 1). The file path is still not decided; `docs/COSTS.md` reads from it. (Added 2026-11-08)
 - Native-speaker spot-checks (for example Hindi) are expected later. Who does them, and when, is not decided. (Added 2026-11-08)
 
 ---
