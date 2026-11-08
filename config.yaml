@@ -1,0 +1,48 @@
+# The only place for settings. Values come from CLAUDE.md and docs/BUILD_PLAYBOOK.md.
+# null means "not decided yet" (see Open questions in docs/DIARY.md).
+
+languages: [ml-IN, hi-IN, en-IN]
+
+models:
+  stt: prisma-v3.0
+  tts: timbre-v3.0
+
+voices: null  # must come from the timbre-v3.0 voice catalog; not chosen yet
+
+tts_speeds: [0.85, 1.0, 1.15]
+
+paths:
+  results: results
+  cache: cache
+  ledger: results/ledger.jsonl
+  corpus: data/corpus
+
+credits:
+  max_calls: null     # GNANI_MAX_CALLS cap; not decided yet
+  max_credits: null   # needs the credit conversion rate; not given yet
+
+concurrency:
+  stt: null           # not decided yet
+  tts: 1              # Timbre allows one active request at a time
+
+clip_max_seconds: 30  # Prisma limit
+
+link:
+  rates_kbps: [2, 5, 10]
+  loss_percent: [0, 10, 20, 30]
+  max_resends: 3
+
+codec:
+  codec2_mode: 2400
+  opus_kbps: 6
+
+malayalam_min_exact_facts: 0.85
+
+split:
+  dev_fraction: 0.3
+  test_fraction: 0.7
+
+seeds:
+  split: null         # not chosen yet
+  link: null          # not chosen yet
+  bootstrap: null     # not chosen yet

@@ -20,6 +20,7 @@ dependencies = [
     "pydub>=0.25.1",
     "python-dotenv>=1.2.4",
     "python-multipart>=0.0.32",
+    "pyyaml>=6.0.3",
     "rapidfuzz>=3.14.5",
     "reedsolo>=1.7.0",
     "regex>=2026.9.29",
@@ -56,6 +57,7 @@ exclude = ["web/", "tools/"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 
