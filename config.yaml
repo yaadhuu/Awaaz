@@ -31,6 +31,9 @@ link:
   rates_kbps: [2, 5, 10]
   loss_percent: [0, 10, 20, 30]
   max_resends: 3
+  mean_burst_packets: 3  # Gilbert-Elliott: average length of a loss burst
+  payload_bytes: 48      # bytes of data per packet
+  header_bytes: 4        # 2 sequence number + 2 CRC16
 
 codec:
   codec2_mode: 2400
@@ -43,6 +46,6 @@ split:
   test_fraction: 0.7
 
 seeds:
-  split: null         # not chosen yet
-  link: null          # not chosen yet
-  bootstrap: null     # not chosen yet
+  split: 1108
+  link: 2026
+  bootstrap: 7
