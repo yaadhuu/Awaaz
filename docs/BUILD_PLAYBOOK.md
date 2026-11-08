@@ -253,3 +253,19 @@ Shortlisting is by verified engagement on the posts, so the finish line is the p
 
 ## Order and parallel work
 Stages 0 to 5 go in order. Stage 2 (the Hindi spot-check) and Stage 11 (UI against fixture data) can be done by the teammate while the pipeline stages run. Stages 6 and 3 do not depend on the API and can run before the pilot if credits or waiting are the issue.
+
+---
+
+## Tooling addendum
+
+Which tools each stage uses. Rules for using them are in the "Tool usage guide" in `CLAUDE.md`.
+
+- Stage 0: pre-commit (ruff, ruff-format, mypy, gitleaks) and CI (`.github/workflows/ci.yml`).
+- Stage 1: diskcache, tenacity, pydantic, structlog, respx, hypothesis.
+- Stage 3: regex, indic-nlp-library, own number-word tables for Hindi and Malayalam.
+- Stage 5: webrtcvad, soxr.
+- Stage 6: pycodec2, soxr, pystoi (pesq only if it installs; it did not on this machine, see `docs/DECISIONS.md`).
+- Stage 7: zstandard, optional reedsolo, scikit-learn, pandas, matplotlib.
+- Stage 8: scikit-learn.
+- Stage 11: Noto Sans fonts, react-query, i18next, framer-motion, vad-web, vitest.
+- Stage 12: CI badge in the README.

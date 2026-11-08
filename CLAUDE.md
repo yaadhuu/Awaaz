@@ -25,3 +25,16 @@ pytest passes, the web build passes, a Playwright smoke test passes and the READ
 
 - Windows 11, Git Bash. Python venv at .venv (Python 3.14); web app in web/ (Vite, React, TypeScript, Tailwind, shadcn).
 - Codec2 built with MinGW at tools/codec2/build/src (c2enc.exe, c2dec.exe). MinGW and cmake are not on the default PATH.
+
+## Tool usage guide
+
+- Gnani calls: ONLY through tinytalk/gnani.py (diskcache for the cache, tenacity for retries, structlog for the ledger). The gnani MCP bypasses our ledger and cache: use it only for one-off manual checks and note any credits used in docs/COSTS.md. Never use it inside the pipeline.
+- Config and data models: pydantic and pydantic-settings; all settings in config.yaml.
+- Text: regex with \X for letter clusters (Malayalam), unicodedata NFC, indic-nlp-library for normalisation, our own number-word tables for hi and ml. rapidfuzz is for diagnostics only, never for scoring exact facts. indic-transliteration only for the romanisation byte-cost test.
+- Audio: pycodec2 mode 2400 on 8 kHz int16 mono; soxr to resample; webrtcvad (16 kHz, 10/20/30 ms frames) to trim silence before STT and the codec; pystoi and pesq only if installed, for objective Tier A quality.
+- Compression and coding: zstandard dictionary trained on the dev split only; reedsolo only inside the FEC-versus-resend experiment; model link loss as bursty (two-state Gilbert-Elliott), seeded.
+- ML: scikit-learn; train on dev, report on test, always compare to the simple rule baseline.
+- Tests: hypothesis for property tests (pack/unpack round trip, normaliser idempotence), respx for fake HTTP, pytest for the rest. Live API only in the stages that say so.
+- Frontend: Noto Sans fonts imported, react-query for server state, i18next for ml/hi/en, framer-motion for the tier-switch animation, @ricky0123/vad-web for end-of-speech, vitest and testing-library for components, Playwright for e2e.
+- Plugins and skills, when to use: feature-dev at the start of a stage to design it; superpowers for planning, test-first and debugging; security-guidance and code-review before each stage's final commit; commit-commands for commits; ui-ux-pro-max only in Stage 11.
+- Do not add a library that is not listed here without logging a decision in docs/DECISIONS.md.
