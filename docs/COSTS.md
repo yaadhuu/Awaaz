@@ -32,3 +32,8 @@ Live attempts in the ledger: 987 in total, all HTTP 200.
 | E4 context `both` (84 STT) | 84 |
 - 336 attempts were wasted on the invalid run, which I caused with a weak codec check. Credits used and remaining: UNVERIFIED (Yadhu to read the balance from the dashboard; Gnani publishes no prices).
 - Rerunning everything from the cache costs 0 calls except Tier A decoded audio: it is stored in `cache/tierA` (not committed). Without that folder, Tier A would need 336 new calls and would give slightly different numbers.
+
+## Update 2026-11-09 (Stage 11)
+- No live Gnani calls in Stage 11. Live attempts in the ledger: still 987 (checked after the stage).
+- The credit meter now reads the ledger through `tinytalk/credits.py`. The first smoke-test row logged a bogus audio length (134217.7 s); credit math clamps any row to 30 s, the Prisma limit.
+- Not run (needs approval): speech-to-text on the 96 noise-mixed channel samples in `assets/channel/` (96 calls; credits unknown until the rate is set).

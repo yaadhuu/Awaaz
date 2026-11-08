@@ -51,6 +51,7 @@ export function useLiveCall() {
           const out = await call(estimate.confirm_needed)
           setLast({ estimate, actual: out.actual })
           void qc.invalidateQueries({ queryKey: ['usage'] })
+          void qc.invalidateQueries({ queryKey: ['usage-summary'] })
           return out
         } catch (e) {
           setError(e instanceof SourceError ? e : new SourceError(500, String(e)))

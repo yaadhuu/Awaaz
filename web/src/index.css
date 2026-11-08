@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@fontsource-variable/fraunces/full.css";
+@import "@fontsource-variable/fraunces/opsz.css";
 @import "@fontsource/rozha-one/400.css";
 @import "@fontsource/noto-serif-malayalam/700.css";
 @import "@fontsource-variable/anek-latin";
@@ -95,7 +95,7 @@
   /* Display type: each script gets its own face. */
   .display {
     font-family: var(--font-display);
-    font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0;
+    font-variation-settings: "opsz" 144;
     font-weight: 600;
     letter-spacing: -0.015em;
     line-height: 1.02;

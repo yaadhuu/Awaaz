@@ -10,6 +10,10 @@ Newest entry at the bottom. Format and rules are in `CLAUDE.md`.
 - Gnani credit-to-call conversion rate and the pilot and main-run credit budgets are not given. Stages 4 and 5 need them. (Added 2026-11-08)
 - Ledger format is JSONL (playbook Stage 1). The file path is still not decided; `docs/COSTS.md` reads from it. (Added 2026-11-08)
 - Review the Hindi and Malayalam interface text in `web/src/i18n.ts` (machine-written). (Added 2026-11-09)
+- Review `docs/review/ui_strings_review.md` (Malayalam: Yadhu; Hindi: native speaker). (Added 2026-11-09)
+- Listen to the two downloaded radio beds (`docs/ASSETS.md`); allow CC BY-SA sounds or not? (Added 2026-11-09)
+- Approve or skip noise-condition STT on 96 channel samples (credits unknown). (Added 2026-11-09)
+- Mobile Lighthouse performance is below 90 (E7): accept, or spend time on compression and data preloading? (Added 2026-11-09)
 - Native-speaker spot-checks (for example Hindi) are expected later. Who does them, and when, is not decided. (Added 2026-11-08)
 
 ---
@@ -93,3 +97,13 @@ Newest entry at the bottom. Format and rules are in `CLAUDE.md`.
 - What could go wrong / known limits: The Hindi and Malayalam interface strings are machine-written and unreviewed. In replay mode the app cannot read facts from Tier A audio. Messages typed by the user that are not in the corpus have no stored audio, so Tier A shows an estimated size. Contrast was chosen to meet 4.5:1 but was not measured with a tool.
 - What Yadhu should be able to say if asked about this: "The interface is built around one idea: show the packets. You can see the audio message break up while the facts message survives, and you can try the teach-back yourself."
 - Git commit hash: b5ee9dd
+
+## 2026-11-09 IST - Stage 11: the web product
+- What we did: Built the full web app: Home, Studio, Link lab, Teach-back, Results, Playground, Usage, Library, About and a 404, in Malayalam, Hindi and English. Added the credit meter and live endpoints (speech to text, text to speech, usage, estimate, calibrate) with an access code, caps and rate limits. Fetched and generated radio-noise beds, mixed channel samples, measured teach-back on saved transcripts (E6), and exported the real results for an offline Replay edition. Wrote e2e, screenshot and reduced-motion tests and ran Lighthouse (E7).
+- Why (the reasoning, in plain words): Judges should be able to try the idea, hear the difference and check every number, without us spending credits and without a server.
+- How it works in 3 sentences a beginner could repeat: The Replay edition is a website that reads our saved results files, so it works anywhere, even offline. The Live edition talks to our server, which is the only thing that talks to Gnani, and it refuses calls past the credit cap. Every number on the Results page links to the file it came from.
+- Files touched: `tinytalk/api.py`, `tinytalk/credits.py`, `tinytalk/gnani.py`, `config.yaml`, `scripts/*` (fetch_radio_beds, make_synthetic_beds, make_channel_samples, teachback_eval, export_site_data, check_contrast), `assets/`, `web/src/**`, `web/e2e/**`, `web/public/data/**`, `docs/*`.
+- Result (real numbers only) and what it means: See E6 and E7. Teach-back caught 14/14 deliberate changes in every language; false alarms 7/14 for Hindi without hints, 0/14 with. Tests: pytest 74 passed, vitest 6 passed, Playwright 19 passed. Lighthouse accessibility 98 to 100 everywhere; performance 97 to 98 on desktop but 55 to 73 on throttled mobile, below the 90 target. Animation code 35,558 bytes gzipped. No credits spent.
+- What could go wrong / known limits: Mobile performance misses the target. Hindi and Malayalam UI text is machine-written. Two downloaded beds were not checked by ear; one is environmental noise, not radio. Live mode has been tested only against a fake server, not with real calls. Credit rates are still unknown.
+- What Yadhu should be able to say if asked about this: "The website shows the whole idea with real saved results and works offline; the live version protects the credits on the server with an access code, a hard cap and a confirm step."
+- Git commit hash: 01971e3

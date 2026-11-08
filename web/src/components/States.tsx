@@ -5,7 +5,7 @@ import { SourceError } from '@/data/source'
 export function Loading() {
   const { t } = useTranslation()
   return (
-    <p role="status" className="py-6 text-muted">
+    <p role="status" className="min-h-[70vh] py-6 text-muted">
       {t('common.loading')}
     </p>
   )

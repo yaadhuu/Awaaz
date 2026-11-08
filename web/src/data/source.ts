@@ -42,6 +42,8 @@ export interface DataSource {
   studio(): Promise<Studio>
   playground(): Promise<PlaygroundRun[]>
   usage(): Promise<Usage>
+  /** Totals only (no ledger rows), for the header meter on every page. */
+  usageSummary(): Promise<Usage>
   send(req: { text: string; lang: Lang; rate_kbps: number; loss_percent: number; id?: string }): Promise<SendResponse>
   teachback(sent: string, readback: string): Promise<TeachbackCheck>
   estimate(kind: 'stt' | 'tts', amount: number): Promise<Estimate>
@@ -107,6 +109,7 @@ export class StaticSource implements DataSource {
   studio = file<Studio>('studio.json')
   playground = file<PlaygroundRun[]>('playground.json')
   usage = file<Usage>('usage.json')
+  usageSummary = file<Usage>('usage_summary.json')
 
   async send(req: { lang: Lang; rate_kbps: number; loss_percent: number; id?: string }) {
     const s = await this.studio()
@@ -131,6 +134,7 @@ export class StaticSource implements DataSource {
 export class ApiSource extends StaticSource {
   readonly kind = 'api' as const
   usage = () => json<Usage>('/api/usage')
+  usageSummary = () => json<Usage>('/api/usage')
   send = (req: { text: string; lang: Lang; rate_kbps: number; loss_percent: number; id?: string }) =>
     live('/api/send', post({ text: req.text, lang: req.lang, rate_kbps: req.rate_kbps, loss_percent: req.loss_percent })) as Promise<SendResponse>
   teachback = (sent: string, readback: string) =>

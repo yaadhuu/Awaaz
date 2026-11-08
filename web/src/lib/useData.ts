@@ -21,3 +21,10 @@ export const useUsage = () =>
     refetchInterval: source.kind === 'api' ? 5000 : false,
     retry: 1,
   })
+export const useUsageSummary = () =>
+  useQuery({
+    queryKey: ['usage-summary'],
+    queryFn: () => source.usageSummary(),
+    refetchInterval: source.kind === 'api' ? 5000 : false,
+    retry: 1,
+  })

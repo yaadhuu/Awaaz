@@ -1,4 +1,4 @@
-.PHONY: check reproduce demo web-check
+.PHONY: check reproduce demo web-check site-data
 
 check:
 	uv run ruff check .
@@ -6,7 +6,11 @@ check:
 	uv run pytest
 
 web-check:
-	cd web && npm run build && npm test && npm run test:e2e
+	cd web && npm run build:replay && npm test && npx playwright test
+
+# Refresh the Replay data from results/ and the local cache (no API calls).
+site-data:
+	uv run python -m scripts.export_site_data
 
 # Rebuilds the curve and plot from the saved results (no credits, no network).
 reproduce:

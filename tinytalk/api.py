@@ -435,20 +435,14 @@ def to_wav16k(upload: bytes, mime: str) -> tuple[bytes, float]:
         # Trim silence at both ends: remove leading silence, reverse, remove again, reverse back.
         trim = "silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
         trim += "silenceremove=start_periods=1:start_threshold=-45dB,areverse"
-        cmd += [
-            "-f",
-            FORMATS[mime],
-            "-i",
-            "pipe:0",
-            "-af",
-            trim,
-            "-ac",
-            "1",
-            "-ar",
-            "16000",
-            str(dst),
-        ]
-        run = subprocess.run(cmd, input=upload, capture_output=True, check=False)
+        # Read at most limit + 1 s of input, so a long upload cannot make ffmpeg decode all of it.
+        limit = str(cfg()["live"]["max_audio_seconds"] + 1)
+        cmd += ["-f", FORMATS[mime], "-t", limit, "-i", "pipe:0", "-af", trim]
+        cmd += ["-ac", "1", "-ar", "16000", str(dst)]
+        try:
+            run = subprocess.run(cmd, input=upload, capture_output=True, check=False, timeout=30)
+        except subprocess.TimeoutExpired as exc:
+            raise HTTPException(400, "The audio took too long to read.") from exc
         if run.returncode != 0 or not dst.exists():
             raise HTTPException(400, "The audio file could not be read.")
         wav = dst.read_bytes()

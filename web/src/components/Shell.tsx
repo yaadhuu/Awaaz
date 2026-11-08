@@ -6,7 +6,7 @@ import { Segmented } from '@/components/Segmented'
 import { source } from '@/data/source'
 import type { Lang } from '@/data/types'
 import { tone } from '@/lib/credits'
-import { useUsage } from '@/lib/useData'
+import { useUsageSummary } from '@/lib/useData'
 import { cn } from '@/lib/utils'
 
 const LANGS: { value: Lang; label: string }[] = [
@@ -30,7 +30,7 @@ export function Mark({ className }: { className?: string }) {
 
 export function CreditMeter() {
   const { t } = useTranslation()
-  const q = useUsage()
+  const q = useUsageSummary()
   if (!q.data) return <span className="num text-xs text-muted">{q.isError ? '—' : '…'}</span>
   const u = q.data
   const share = Math.min(1, u.share)
@@ -97,7 +97,7 @@ export function Shell({ lang, onLang, children }: { lang: Lang; onLang: (l: Lang
             </span>
           </Link>
           <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
-            <Segmented label={t('lang')} value={lang} options={LANGS} onChange={onLang} />
+            <Segmented label={t('lang')} value={lang} options={LANGS} onChange={onLang} className="[&_button]:font-[system-ui]" />
             <CreditMeter />
           </div>
         </div>

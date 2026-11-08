@@ -7,10 +7,15 @@ import { PacketStrip } from '@/components/PacketStrip'
 import { StampCard } from '@/components/StampCard'
 import { Await } from '@/components/States'
 import type { Lang, Tier } from '@/data/types'
-import { resources } from '@/i18n'
 import { useCurve, useStudio } from '@/lib/useData'
 
 const LANG_ORDER: Lang[] = ['ml', 'hi', 'en']
+// The headline in all three languages (same strings as the locale files).
+const TITLES: Record<Lang, string> = {
+  ml: 'ലൈൻ മോശമാകുമ്പോൾ, പ്രധാനമായത് അയയ്ക്കുക.',
+  hi: 'जब लाइन खराब हो, ज़रूरी बात भेजें।',
+  en: 'When the line is bad, send what matters.',
+}
 
 export default function Home({ lang }: { lang: Lang }) {
   const { t } = useTranslation()
@@ -44,7 +49,7 @@ export default function Home({ lang }: { lang: Lang }) {
           {LANG_ORDER.map((l, i) => (
             <li key={l} lang={l} className={`py-5 md:px-5 ${i ? 'border-t border-rule md:border-l md:border-t-0' : ''}`}>
               <p className="num text-xs text-muted">{l}</p>
-              <p className="display mt-1 text-[clamp(1.6rem,3vw,2.2rem)]">{resources[l].home.title}</p>
+              <p className="display mt-1 text-[clamp(1.6rem,3vw,2.2rem)]">{TITLES[l]}</p>
             </li>
           ))}
         </ol>

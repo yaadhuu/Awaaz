@@ -1,10 +1,10 @@
 import { domAnimation, LazyMotion, MotionConfig } from 'motion/react'
 import { lazy, Suspense, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import { Shell } from '@/components/Shell'
 import { Loading } from '@/components/States'
 import type { Lang } from '@/data/types'
+import { loadLang } from '@/i18n'
 import Home from '@/pages/Home'
 
 const Studio = lazy(() => import('@/pages/Studio'))
@@ -31,16 +31,14 @@ function savedLang(): Lang {
 const Router = import.meta.env.VITE_DATA_SOURCE === 'api' ? BrowserRouter : HashRouter
 
 export default function App() {
-  const { i18n } = useTranslation()
   const [lang, setLang] = useState<Lang>(() => {
     const l = savedLang()
-    void i18n.changeLanguage(l)
+    void loadLang(l)
     document.documentElement.lang = l
     return l
   })
   const pick = (l: Lang) => {
-    setLang(l)
-    void i18n.changeLanguage(l)
+    void loadLang(l).then(() => setLang(l))
     document.documentElement.lang = l
     try {
       localStorage.setItem('tinytalk-lang', l)

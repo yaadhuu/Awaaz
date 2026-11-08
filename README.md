@@ -65,6 +65,10 @@ Offline sizes of packed messages (`results/sizes.json`, test split, average byte
 | Hindi | 189.4 | 25.6 | 6.6 |
 | English | 76.5 | 26.5 | 6.6 |
 
+## Web app
+
+Two editions, same data: the **Replay edition** (static, offline, built from the saved results: `cd web && npm run build:replay`) and the **Live edition** (real Gnani calls behind an access code and a credit cap). Pages: Home, Studio, Link lab, Teach-back, Results, Playground, Usage, Library, About. See `docs/DEPLOY.md`, `docs/ASSETS.md` and E6/E7 in `docs/EXPERIMENTS.md`.
+
 ## Run it
 
 ```

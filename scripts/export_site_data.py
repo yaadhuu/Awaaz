@@ -119,6 +119,16 @@ def main() -> None:
             "ledger": table,
         },
     )
+    # The header meter on every page needs only the totals, not 1000+ ledger rows.
+    write(
+        "usage_summary.json",
+        {
+            **credits.summary(c, rows, credits.load_calibration(c["calibration_file"])),
+            "live": False,
+            "queue": 0,
+            "ledger": [],
+        },
+    )
 
     manifest = json.loads(Path("assets/manifest.json").read_text("utf-8"))
     write("beds.json", [{k: v for k, v in b.items() if k != "file"} for b in manifest["beds"]])
