@@ -35,7 +35,7 @@ def test_failed_delivery_gives_no_facts() -> None:
     assert s.facts == Facts()
 
 
-def test_tier_a_audio_loses_samples_when_packets_are_lost() -> None:
+def test_tier_a_sends_codec2_and_loses_packets_on_a_lossy_link() -> None:
     t = np.arange(32000) / 16000  # 2 s of a voiced buzz: 120 Hz with harmonics
     harmonics = np.sum([np.sin(2 * np.pi * 120 * k * t) / k for k in range(1, 12)], axis=0)
     pcm = (6000 * harmonics).astype(np.int16)
@@ -45,14 +45,14 @@ def test_tier_a_audio_loses_samples_when_packets_are_lost() -> None:
     assert clean.payload_bytes == 600
     assert lossy.link.received.count(None) > 0
     clean_pcm, _ = codec.wav_to_pcm(clean.audio_wav or b"")
-    lossy_pcm, _ = codec.wav_to_pcm(lossy.audio_wav or b"")
     assert abs(len(clean_pcm) - 32000) < 400
 
-    def silent_windows(x: np.ndarray) -> int:
-        w = x[: len(x) // 320 * 320].reshape(-1, 320)
-        return int((np.abs(w.astype(int)).max(axis=1) < 5).sum())
 
-    assert silent_windows(lossy_pcm) >= silent_windows(clean_pcm) + 8  # a lost 160 ms chunk
+def test_lost_chunk_becomes_exact_silence() -> None:
+    chunk = codec.c2_encode(np.full(1280, 3000, dtype=np.int16))[:48]  # 8 frames
+    pcm = codec.c2_decode_with_loss([chunk, None, chunk])
+    assert len(pcm) == 3 * 8 * 160
+    assert not pcm[1280:2560].any()  # the lost middle chunk is zeros
 
 
 @pytest.mark.parametrize(
