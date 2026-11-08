@@ -106,11 +106,12 @@ _spend_lock = threading.Lock()
 def live_guard(request: Request, x_access_code: str | None = Header(default=None)) -> None:
     """Access code and rate limit before a live call; the caps are checked again inside spend()."""
     check_access(request, x_access_code)
-    _cap_check(None)
+    _cap_check(None, set_budget=False)
 
 
-def _cap_check(estimate: float | None) -> None:
-    """Refuse when today's limit or the credit/call cap would be passed. Sets the client's call cap."""
+def _cap_check(estimate: float | None, set_budget: bool = True) -> None:
+    """Refuse when today's limit or the credit/call cap would be passed. With set_budget (only under
+    _spend_lock) it also gives the client a fresh budget of at most 3 attempts for this one call."""
     c = cfg()["credits"]
     rows = ledger_rows()
     if credits.today_calls(rows) >= cfg()["live"]["daily_call_cap"]:
@@ -128,8 +129,9 @@ def _cap_check(estimate: float | None) -> None:
         left = 3
     else:
         left = min(3, int(c["cap_calls"] - s["calls"]))
-    g = gnani()
-    g.max_calls = g._used + left
+    if set_budget:
+        g = gnani()
+        g.max_calls = g._used + left
 
 
 def spend(estimate: float | None, call: Any) -> Any:
@@ -270,7 +272,14 @@ def send(req: SendRequest) -> SendResponse:
     truth = extract(req.text)
     c = send_facts(truth, make_link(req, "C"))
     b = send_transcript(req.text, req.lang, zdict(req.lang), make_link(req, "B"))
-    a, secs = spend(None, lambda: tier_a(req, truth)) if live() else tier_a(req, truth)
+    if live():
+        c = cfg()["credits"]
+        tts_est = credits.estimate(c, "tts", characters=len(req.text))
+        stt_est = credits.estimate(c, "stt", audio_seconds=len(req.text) / CHARS_PER_SECOND)
+        est = None if tts_est is None or stt_est is None else tts_est + stt_est
+        a, secs = spend(est, lambda: tier_a(req, truth))
+    else:
+        a, secs = tier_a(req, truth)
     reports = [a] + [
         TierReport(
             tier=s.tier, available=True, payload_bytes=s.payload_bytes,

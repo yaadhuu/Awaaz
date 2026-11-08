@@ -13,3 +13,4 @@ data/audio/
 .coverage
 !assets/beds/*.wav
 !web/public/assets/**/*.mp3
+!web/public/data/**/*.mp3
