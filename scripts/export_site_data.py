@@ -5,6 +5,7 @@ manifest and the Gnani cache. Nothing calls the API. The output is committed, so
 works offline from a clean clone (the cache itself is not committed)."""
 
 import json
+import random
 import re
 import shutil
 import subprocess
@@ -16,6 +17,7 @@ from typing import Any
 import diskcache
 import yaml
 
+from scripts import teachback_eval
 from tinytalk import api, corpus, credits, pipeline
 from tinytalk.gnani import Gnani
 from tinytalk.lexicon import LANGS
@@ -158,6 +160,21 @@ def main() -> None:
                     )
                     studio["runs"][f"{r['id']}|{rate}|{loss}"] = api.send(req).model_dump()
     write("studio.json", studio)
+
+    demo = {}
+    for mid, heard in studio["heard"].items():
+        lang = mid.rsplit("-", 1)[1]
+        sent = next(x["text"] for x in studio["samples"][lang] if x["id"] == mid)
+        changed, kind = teachback_eval.alter(heard or sent, lang, random.Random(mid))
+        demo[mid] = {
+            "sent": sent,
+            "heard": heard,
+            "heard_check": api.teachback(api.TeachbackRequest(sent=sent, readback=heard or "")),
+            "altered": changed,
+            "altered_kind": kind,
+            "altered_check": api.teachback(api.TeachbackRequest(sent=sent, readback=changed)),
+        }
+    write("teachback_demo.json", demo)
 
     samples = []
     for r in [x for lng in LANGS for x in corpus.load(cfg["paths"]["corpus"], lng, "test")[:1]]:

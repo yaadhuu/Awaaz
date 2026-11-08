@@ -432,7 +432,22 @@ def to_wav16k(upload: bytes, mime: str) -> tuple[bytes, float]:
     try:
         dst = tmp / "out.wav"
         cmd = ["ffmpeg", "-v", "error", "-y", "-protocol_whitelist", "pipe,file"]
-        cmd += ["-f", FORMATS[mime], "-i", "pipe:0", "-ac", "1", "-ar", "16000", str(dst)]
+        # Trim silence at both ends: remove leading silence, reverse, remove again, reverse back.
+        trim = "silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
+        trim += "silenceremove=start_periods=1:start_threshold=-45dB,areverse"
+        cmd += [
+            "-f",
+            FORMATS[mime],
+            "-i",
+            "pipe:0",
+            "-af",
+            trim,
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            str(dst),
+        ]
         run = subprocess.run(cmd, input=upload, capture_output=True, check=False)
         if run.returncode != 0 or not dst.exists():
             raise HTTPException(400, "The audio file could not be read.")

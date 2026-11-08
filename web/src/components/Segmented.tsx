@@ -14,6 +14,7 @@ export function Segmented<T extends string | number>({
   onChange,
   className,
   mono = false,
+  hideLabel = false,
 }: {
   label: string
   value: T
@@ -21,6 +22,7 @@ export function Segmented<T extends string | number>({
   onChange: (v: T) => void
   className?: string
   mono?: boolean
+  hideLabel?: boolean
 }) {
   const id = useId()
 
@@ -37,14 +39,14 @@ export function Segmented<T extends string | number>({
 
   return (
     <div className={className}>
-      <span id={id} className="mb-1.5 block text-sm font-medium">
+      <span id={id} className={cn('mb-1.5 block text-sm font-semibold', hideLabel && 'sr-only')}>
         {label}
       </span>
       <div
         role="radiogroup"
         aria-labelledby={id}
         onKeyDown={onKey}
-        className="inline-flex w-full rounded-lg bg-muted p-1"
+        className="inline-flex w-full border-[1.5px] border-ink"
       >
         {options.map((o) => {
           const active = o.value === value
@@ -58,11 +60,11 @@ export function Segmented<T extends string | number>({
               tabIndex={active ? 0 : -1}
               onClick={() => onChange(o.value)}
               className={cn(
-                'min-h-10 flex-1 cursor-pointer rounded-md px-3 text-sm font-medium transition-colors',
+                'min-h-10 flex-1 cursor-pointer whitespace-nowrap px-3 text-sm transition-colors [&+&]:border-l [&+&]:border-ink/40',
                 mono && 'num',
                 active
-                  ? 'bg-card text-foreground shadow-sm ring-1 ring-border'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'bg-ink font-semibold text-paper'
+                  : 'text-ink hover:bg-card',
               )}
             >
               {o.label}

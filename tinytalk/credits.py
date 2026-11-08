@@ -9,6 +9,13 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+MAX_CLIP_SECONDS = 30.0  # Prisma refuses longer audio, so a larger ledger value is a logging error
+
+
+def secs(row: dict[str, Any]) -> float:
+    """Audio seconds of a row; the first smoke-test row logged a bogus WAV length, so clamp to 30."""
+    return min(float(row.get("audio_seconds") or 0.0), MAX_CLIP_SECONDS)
+
 
 def load_ledger(path: str | Path) -> list[dict[str, Any]]:
     """All ledger rows (one JSON object per line); empty if the file does not exist."""
@@ -39,7 +46,7 @@ def row_credits(c: dict[str, Any], row: dict[str, Any]) -> float | None:
     """Estimated credits of one ledger row: 0 for cache hits, attempts count as separate calls."""
     if row.get("cache_hit"):
         return 0.0
-    one = estimate(c, row["kind"], row.get("audio_seconds") or 0.0, row.get("characters") or 0)
+    one = estimate(c, row["kind"], secs(row), row.get("characters") or 0)
     return None if one is None else one * max(1, row.get("attempts", 1))
 
 
@@ -57,7 +64,7 @@ def summary(
     """Totals, spend by day and kind, remaining credits and the meter state."""
     live_rows = [r for r in rows if not r.get("cache_hit")]
     calls = sum(r.get("attempts", 1) for r in live_rows)
-    seconds = sum(r.get("audio_seconds") or 0.0 for r in live_rows if r["kind"] == "stt")
+    seconds = sum(secs(r) for r in live_rows if r["kind"] == "stt")
     chars = sum(r.get("characters") or 0 for r in live_rows if r["kind"] == "tts")
     configured = rates_configured(c)
     spent = sum(row_credits(c, r) or 0.0 for r in live_rows) if configured else None

@@ -1,145 +1,192 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
-@import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/fraunces/full.css";
+@import "@fontsource/rozha-one/400.css";
+@import "@fontsource/noto-serif-malayalam/700.css";
+@import "@fontsource-variable/anek-latin";
+@import "@fontsource-variable/anek-malayalam";
+@import "@fontsource-variable/anek-devanagari";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 
-@custom-variant dark (&:is(.dark *));
-
-/* Palette: cool paper and harbour ink. Tier colours carry meaning everywhere:
-   amber = audio (costly, fragile), blue = transcript, green = key facts. */
+/* Field manual palette. Contrast checked by scripts/check_contrast.py.
+   Gold is for rules and ornament only, never for text. */
 :root {
-  --background: #f3f6f8;
-  --foreground: #0f2230;
-  --card: #ffffff;
-  --card-foreground: #0f2230;
-  --popover: #ffffff;
-  --popover-foreground: #0f2230;
-  --primary: #12324a;
-  --primary-foreground: #ffffff;
-  --secondary: #e8eef2;
-  --secondary-foreground: #0f2230;
-  --muted: #e8eef2;
-  --muted-foreground: #4f626e;
-  --accent: #e0f2f3;
-  --accent-foreground: #0b5c63;
-  --destructive: #b42318;
-  --border: #d5dee4;
-  --input: #c3d0d8;
-  --ring: #0e7c86;
-  --radius: 0.75rem;
-
-  --tier-a: #a5470a;
-  --tier-a-soft: #fdf1e1;
-  --tier-b: #2155c9;
-  --tier-b-soft: #e8eefc;
-  --tier-c: #11743a;
-  --tier-c-soft: #e4f4ea;
-  --ok: #11743a;
-  --bad: #b42318;
-  --bad-soft: #fdeceb;
-  --shadow: 0 1px 2px rgb(15 34 48 / 0.06), 0 12px 28px -16px rgb(15 34 48 / 0.18);
-
-  --font-sans: "Geist Variable", "Noto Sans Malayalam", "Noto Sans Devanagari", system-ui, sans-serif;
-  --font-mono: "Geist Mono Variable", ui-monospace, Consolas, monospace;
-}
-
-.dark {
-  --background: #0a1620;
-  --foreground: #e7eff4;
-  --card: #0f212e;
-  --card-foreground: #e7eff4;
-  --popover: #0f212e;
-  --popover-foreground: #e7eff4;
-  --primary: #7fd4dc;
-  --primary-foreground: #05222a;
-  --secondary: #16303f;
-  --secondary-foreground: #e7eff4;
-  --muted: #16303f;
-  --muted-foreground: #9db1bd;
-  --accent: #123a45;
-  --accent-foreground: #9be0e6;
-  --destructive: #ff8f84;
-  --border: #223a4a;
-  --input: #2f4a5c;
-  --ring: #7fd4dc;
-
-  --tier-a: #f5a455;
-  --tier-a-soft: #2c1d10;
-  --tier-b: #8db3ff;
-  --tier-b-soft: #14233f;
-  --tier-c: #67d891;
-  --tier-c-soft: #11291c;
-  --ok: #67d891;
-  --bad: #ff8f84;
-  --bad-soft: #321614;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 28px -16px rgb(0 0 0 / 0.6);
+  --paper: #f4ecdb;
+  --card: #fbf6ea;
+  --ink: #171a2e;
+  --muted: #4a4a5c;
+  --rule: #d8c9a9;
+  --vermilion: #b3321f;
+  --teal: #0f5c5a;
+  --turmeric: #a06b10;
+  --turmeric-ink: #7a4f00;
+  --gold: #b8892b;
+  --tier-a: #b3321f;
+  --tier-b: #0f5c5a;
+  --tier-c: #a06b10;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
   --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+  --color-ink: var(--ink);
   --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --color-rule: var(--rule);
+  --color-vermilion: var(--vermilion);
+  --color-teal: var(--teal);
+  --color-turmeric: var(--turmeric);
+  --color-turmeric-ink: var(--turmeric-ink);
+  --color-gold: var(--gold);
   --color-tier-a: var(--tier-a);
-  --color-tier-a-soft: var(--tier-a-soft);
   --color-tier-b: var(--tier-b);
-  --color-tier-b-soft: var(--tier-b-soft);
   --color-tier-c: var(--tier-c);
-  --color-tier-c-soft: var(--tier-c-soft);
-  --color-ok: var(--ok);
-  --color-bad: var(--bad);
-  --color-bad-soft: var(--bad-soft);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --shadow-card: var(--shadow);
+  --font-display: "Fraunces Variable", Georgia, serif;
+  --font-sans: "Anek Latin Variable", "Anek Malayalam Variable", "Anek Devanagari Variable", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   html {
-    color-scheme: light;
-  }
-  html.dark {
-    color-scheme: dark;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
     margin: 0;
-    font-size: 16px;
-    line-height: 1.55;
-    background-image: radial-gradient(60rem 28rem at 50% -10rem, var(--accent), transparent 70%);
-    background-repeat: no-repeat;
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    font-feature-settings: "kern";
+    text-rendering: optimizeLegibility;
+  }
+  /* Indic scripts need room above and below the line for matras and chillu letters. */
+  :lang(ml),
+  :lang(hi) {
+    line-height: 1.75;
   }
   :focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
+    outline: 2px solid var(--vermilion);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  ::selection {
+    background: #f0d9a8;
+  }
+  a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+}
+
+@layer components {
+  /* Display type: each script gets its own face. */
+  .display {
+    font-family: var(--font-display);
+    font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.02;
+  }
+  :lang(hi) .display,
+  .display:lang(hi) {
+    font-family: "Rozha One", "Tiro Devanagari Hindi", serif;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.35;
+    padding-block: 0.08em;
+  }
+  :lang(ml) .display,
+  .display:lang(ml) {
+    font-family: "Noto Serif Malayalam", serif;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.4;
+    padding-block: 0.1em;
   }
   .num {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.01em;
+  }
+  /* Kasavu: off-white with a thin gold line inset from the edge. */
+  .kasavu {
+    background: var(--card);
+    box-shadow:
+      inset 0 0 0 1px var(--rule),
+      inset 0 0 0 5px var(--card),
+      inset 0 0 0 6px var(--gold);
+  }
+  /* Postal-stamp perforation: paper-coloured holes on a card-coloured rim around the content. */
+  .stamp {
+    padding: 9px;
+    background:
+      radial-gradient(circle at 50% 50%, var(--paper) 2.6px, transparent 3.1px) 0 0 / 10px 10px,
+      var(--card);
+  }
+  .stamp > * {
+    background: var(--card);
+  }
+  .rule-gold {
+    border-color: var(--gold);
+  }
+  .eyebrow-num {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 150ms, color 150ms;
+  }
+  .btn:hover {
+    background: #2b2f4a;
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn-ghost:hover {
+    background: #ece1c8;
+  }
+  .field {
+    width: 100%;
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    background: #fffdf7;
+    padding: 0.6rem 0.75rem;
+    color: var(--ink);
+  }
+  .table-ruled {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .table-ruled th,
+  .table-ruled td {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.45rem 0.75rem 0.45rem 0;
+    text-align: left;
+    vertical-align: top;
+  }
+  .table-ruled thead th {
+    border-bottom: 1.5px solid var(--ink);
+    font-weight: 600;
   }
 }
 
@@ -149,5 +196,6 @@
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

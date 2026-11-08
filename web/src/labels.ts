@@ -1,4 +1,4 @@
-import type { Facts, Lang } from '@/api'
+import type { Facts, Lang } from '@/data/types'
 
 /** Display names for places and units; the ids come from the API (same as tinytalk/lexicon.py). */
 const PLACES: Record<string, Record<Lang, string>> = {

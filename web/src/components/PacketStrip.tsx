@@ -1,36 +1,34 @@
 import { useTranslation } from 'react-i18next'
-import type { Tier } from '@/api'
+import type { PacketState, Tier } from '@/data/types'
 import { cn } from '@/lib/utils'
 
-const COLOR: Record<Tier, string> = { A: 'bg-tier-a', B: 'bg-tier-b', C: 'bg-tier-c' }
-const RING: Record<Tier, string> = { A: 'border-tier-a', B: 'border-tier-b', C: 'border-tier-c' }
-const MAX = 240
+const FILL: Record<Tier, string> = { A: 'bg-tier-a', B: 'bg-tier-b', C: 'bg-tier-c' }
+const EDGE: Record<Tier, string> = { A: 'border-tier-a', B: 'border-tier-b', C: 'border-tier-c' }
+const MAX = 200
 
-/** One cell per packet: solid = arrived, outlined = arrived after a resend, red = never arrived. */
-export function PacketStrip({ states, tier }: { states: string[]; tier: Tier }) {
+/** One tick per packet, like a paper tape: solid arrived, hollow arrived after a resend, a gap was lost. */
+export function PacketStrip({ states, tier }: { states: PacketState[]; tier: Tier }) {
   const { t } = useTranslation()
   const lost = states.filter((s) => s === 'lost').length
   const resent = states.filter((s) => s === 'resent').length
   const summary = t('packets', { count: states.length, lost, resent })
-  const shown = states.slice(0, MAX)
-
   return (
     <div>
-      <div role="img" aria-label={summary} className="flex flex-wrap gap-[3px]">
-        {shown.map((s, i) => (
+      <div role="img" aria-label={summary} className="flex flex-wrap gap-[2px]">
+        {states.slice(0, MAX).map((s, i) => (
           <span
             key={i}
             className={cn(
-              'h-5 w-2.5 rounded-[3px] border',
-              s === 'ok' && cn(COLOR[tier], 'border-transparent'),
-              s === 'resent' && cn(RING[tier], 'bg-transparent'),
-              s === 'lost' && 'border-bad bg-bad/25',
+              'h-4 w-[6px] border',
+              s === 'ok' && cn(FILL[tier], 'border-transparent'),
+              s === 'resent' && cn(EDGE[tier], 'bg-transparent'),
+              s === 'lost' && 'border-dotted border-muted/60 bg-transparent',
             )}
           />
         ))}
-        {states.length > MAX && <span className="num ml-1 text-xs text-muted-foreground">+{states.length - MAX}</span>}
+        {states.length > MAX && <span className="num ml-1 text-xs text-muted">+{states.length - MAX}</span>}
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">{summary}</p>
+      <p className="num mt-1.5 text-xs text-muted">{summary}</p>
     </div>
   )
 }
