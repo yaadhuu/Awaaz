@@ -1,5 +1,7 @@
 # TinyTalk
 
+[![CI](https://github.com/yaadhuu/Gnani_Hackathon/actions/workflows/ci.yml/badge.svg)](https://github.com/yaadhuu/Gnani_Hackathon/actions/workflows/ci.yml)
+
 Voice messages over weak links, by sending text instead of audio.
 
 When a link is slow or lossy (think flood relief with a damaged network), a voice message may not get through. TinyTalk measures the link and picks what to send:
