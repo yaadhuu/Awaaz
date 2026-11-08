@@ -11,8 +11,6 @@ Each experiment uses this shape:
 - Conclusion: (what it means, and what we did next)
 ```
 
-No experiments run yet.
-
 ## E0 - Live smoke test, Hindi round trip (2026-11-08 23:33 IST)
 - Setup: `scripts/smoke_gnani.py`. Timbre (`timbre-v3.0`, voice Vasudha, `hi-IN`, speed 1.0, 16 kHz WAV) spoke the Hindi text "बाढ़ की चेतावनी। पचास लोग फंसे हैं।" ("Flood warning. Fifty people are trapped."). Prisma (`prisma-v3.0`, `hi-IN`, default `format=transcribe`) transcribed that audio. Raw rows: `results/ledger.jsonl`.
 - Results: TTS returned 94764 bytes (HTTP 200, 1 attempt, `latency_s` 1.241). STT returned the transcript `बाढ़ की चेतावनी, 50 लोग फंसे हैं।`, `detected_language_code` `hi-IN`, `processing_time` 0.12991714477539062, `end_to_end_latency` 0.13153886795043945, HTTP 200, 1 attempt.
