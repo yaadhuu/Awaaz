@@ -7,7 +7,7 @@ const COLOR: Record<Tier, string> = { A: 'var(--tier-a)', B: 'var(--tier-b)', C:
 export const pct = (x: number) => `${Math.round(x * 100)}%`
 
 /** Width of a container, for charts that must fit 360 px phones and 1440 px screens. */
-export function useWidth<T extends HTMLElement>(fallback = 640) {
+export function useWidth<T extends HTMLElement>(fallback = 300) {
   const ref = useRef<T>(null)
   const [w, setW] = useState(fallback)
   useEffect(() => {
@@ -117,7 +117,7 @@ export function CurveChart({
 
 /** Horizontal rate bars with 95 % interval whiskers. */
 export function RateBars({ rows }: { rows: { label: string; value: number; ci: [number, number]; tone: 'ok' | 'bad' }[] }) {
-  const [ref, width] = useWidth<HTMLDivElement>(480)
+  const [ref, width] = useWidth<HTMLDivElement>()
   const rowH = 30
   const labelW = Math.min(170, width * 0.38)
   const x = scaleLinear().domain([0, 1]).range([labelW, width - 48])
@@ -155,7 +155,7 @@ export function RateBars({ rows }: { rows: { label: string; value: number; ci: [
 
 /** Stacked bars by day (speech to text and text to speech). */
 export function DayBars({ days }: { days: { day: string; stt: number; tts: number }[] }) {
-  const [ref, width] = useWidth<HTMLDivElement>(480)
+  const [ref, width] = useWidth<HTMLDivElement>()
   const h = 180
   const x = scaleBand<string>().domain(days.map((d) => d.day)).range([40, width - 8]).padding(0.35)
   const max = Math.max(1, ...days.map((d) => d.stt + d.tts))

@@ -1,4 +1,4 @@
-import { AnimatePresence, m } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink, useLocation } from 'react-router-dom'
@@ -61,6 +61,7 @@ export function CreditMeter() {
 export function Shell({ lang, onLang, children }: { lang: Lang; onLang: (l: Lang) => void; children: ReactNode }) {
   const { t } = useTranslation()
   const loc = useLocation()
+  const reduce = useReducedMotion()
   const [open, setOpen] = useState(false)
   const nav = (
     <ul className="flex flex-col gap-1 lg:flex-row lg:flex-wrap lg:gap-x-5">
@@ -119,10 +120,10 @@ export function Shell({ lang, onLang, children }: { lang: Lang; onLang: (l: Lang
         <AnimatePresence mode="wait" initial={false}>
           <m.div
             key={loc.pathname}
-            initial={{ opacity: 0, y: 8 }}
+            initial={reduce ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            exit={reduce ? undefined : { opacity: 0 }}
+            transition={{ duration: reduce ? 0 : 0.2 }}
           >
             {children}
           </m.div>

@@ -79,6 +79,18 @@
   }
 }
 
+@layer base {
+  /* Grid and flex children may shrink below their content, so long words and wide charts never push the page sideways. */
+  .grid > *,
+  .flex > * {
+    min-width: 0;
+  }
+  .display:lang(ml),
+  .display:lang(hi) {
+    overflow-wrap: anywhere;
+  }
+}
+
 @layer components {
   /* Display type: each script gets its own face. */
   .display {
@@ -88,7 +100,6 @@
     letter-spacing: -0.015em;
     line-height: 1.02;
   }
-  :lang(hi) .display,
   .display:lang(hi) {
     font-family: "Rozha One", "Tiro Devanagari Hindi", serif;
     font-weight: 400;
@@ -96,7 +107,6 @@
     line-height: 1.35;
     padding-block: 0.08em;
   }
-  :lang(ml) .display,
   .display:lang(ml) {
     font-family: "Noto Serif Malayalam", serif;
     font-weight: 700;
@@ -166,6 +176,8 @@
   }
   .field {
     width: 100%;
+    max-width: 100%;
+    text-overflow: ellipsis;
     border: 1.5px solid var(--ink);
     border-radius: 2px;
     background: #fffdf7;

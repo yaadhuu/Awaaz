@@ -46,7 +46,7 @@ export function Segmented<T extends string | number>({
         role="radiogroup"
         aria-labelledby={id}
         onKeyDown={onKey}
-        className="inline-flex w-full border-[1.5px] border-ink"
+        className="flex w-full flex-wrap border-[1.5px] border-ink"
       >
         {options.map((o) => {
           const active = o.value === value
@@ -60,7 +60,7 @@ export function Segmented<T extends string | number>({
               tabIndex={active ? 0 : -1}
               onClick={() => onChange(o.value)}
               className={cn(
-                'min-h-10 flex-1 cursor-pointer whitespace-nowrap px-3 text-sm transition-colors [&+&]:border-l [&+&]:border-ink/40',
+                'min-h-10 min-w-fit flex-auto cursor-pointer whitespace-nowrap px-2 text-sm sm:px-3 transition-colors [&+&]:border-l [&+&]:border-ink/40',
                 mono && 'num',
                 active
                   ? 'bg-ink font-semibold text-paper'
