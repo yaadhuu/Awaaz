@@ -45,16 +45,28 @@ def resample(pcm: Pcm, src: int, dst: int) -> Pcm:
 
 
 def c2_encode(pcm8k: Pcm) -> bytes:
-    """Codec2 2400 bps: 160 samples (20 ms) become 6 bytes. Pads the last frame with silence."""
+    """Codec2 2400 bps: 160 samples (20 ms) become 6 bytes. Pads the last frame with silence.
+
+    pycodec2 passes a whole array to a C call that handles one frame, so we loop frame by frame."""
     c2 = Codec2(C2_MODE)
     n = c2.samples_per_frame()
     padded = np.pad(pcm8k, (0, -len(pcm8k) % n))
-    return bytes(c2.encode(padded))
+    return b"".join(bytes(c2.encode(padded[i : i + n])) for i in range(0, len(padded), n))
+
+
+def _decode_frames(c2: Codec2, data: bytes) -> Pcm:
+    """Decode 6-byte frames one by one with the given decoder (it keeps state between frames)."""
+    size = c2.bytes_per_frame()
+    frames = [
+        np.asarray(c2.decode(data[i : i + size]), dtype=np.int16)
+        for i in range(0, len(data) - size + 1, size)
+    ]
+    return np.concatenate(frames) if frames else np.zeros(0, dtype=np.int16)
 
 
 def c2_decode(data: bytes) -> Pcm:
     """Codec2 2400 bps decode back to 8 kHz samples."""
-    return np.asarray(Codec2(C2_MODE).decode(data), dtype=np.int16)
+    return _decode_frames(Codec2(C2_MODE), data)
 
 
 def opus_available() -> bool:
@@ -82,10 +94,11 @@ def opus_decode(data: bytes, rate: int) -> Pcm:
 
 
 def c2_decode_with_loss(chunks: list[bytes | None], frames_per_chunk: int = 8) -> Pcm:
-    """Decode received chunks; a lost chunk (None) becomes silence of the same length."""
-    n = Codec2(C2_MODE).samples_per_frame()
+    """Decode received chunks with one decoder; a lost chunk (None) becomes silence."""
+    c2 = Codec2(C2_MODE)
+    n = c2.samples_per_frame()
     parts = [
-        c2_decode(c) if c is not None else np.zeros(frames_per_chunk * n, dtype=np.int16)
+        _decode_frames(c2, c) if c is not None else np.zeros(frames_per_chunk * n, dtype=np.int16)
         for c in chunks
     ]
     return np.concatenate(parts) if parts else np.zeros(0, dtype=np.int16)

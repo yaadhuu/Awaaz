@@ -29,15 +29,29 @@ Only `tinytalk/gnani.py` talks to Gnani. Every call goes through a disk cache, a
 
 ## Results
 
-Not measured yet on live audio. Measured so far (offline, `results/sizes.json`, test split of 28 messages per language, averages in bytes):
+Test split: 28 messages per language, one synthetic voice, simulated link at 5 kbps. Exact facts correct (places, numbers with units, times) with 95 percent Wilson intervals. Full numbers and the story of what went wrong are in `docs/EXPERIMENTS.md` (E3 to E5); raw files are in `results/`.
+
+| Tier | Bytes on the air per minute of speech (0% loss) | English, 0% loss | English, 30% loss | Hindi, 0% / 30% | Malayalam, 0% / 30% |
+|------|---:|---:|---:|---:|---:|
+| A audio (Codec2) | about 19,506 | 0.879 (0.796-0.931) | 0.319 (0.232-0.420) | 0.681 / 0.253 | 0.978 / 0.407 |
+| B transcript | 281 to 409 | 0.956 (0.892-0.983) | 0.802 (0.709-0.871) | 0.879 / 0.747 | 0.989 / 0.912 |
+| C facts only | 80 to 98 | 0.956 (0.892-0.983) | 0.791 (0.697-0.862) | 0.879 / 0.879 | 0.989 / 0.791 |
+
+Reading: on a clean link audio carries about as many facts as text but costs roughly 50 to 70 times the bytes of Tier B. Audio falls steeply as packets are lost; the text tiers lose only the messages that fail after three resends. Place-name hints (`keyterms`) took Prisma from 80/91 to 91/91 facts in Hindi and 87/91 to 91/91 in English on clean audio (E4, closed list of names, so optimistic).
+
+The curve (`results/curve.png`):
+
+![Facts correct versus bytes per minute](results/curve.png)
+
+A first Tier A run was invalid because of a codec library bug (it processed only the first frame). It was caught, fixed, tested and rerun; the failed data is kept in `results/tiers_invalid_codec_bug.jsonl` (E5).
+
+Offline sizes of packed messages (`results/sizes.json`, test split, average bytes per message; the corpus is templated, so Tier B looks better than it would on free speech):
 
 | Language | Raw UTF-8 text | Tier B | Tier C |
 |----------|---------------:|-------:|-------:|
 | Malayalam | 226.3 | 25.8 | 6.6 |
 | Hindi | 189.4 | 25.6 | 6.6 |
 | English | 76.5 | 26.5 | 6.6 |
-
-The corpus is templated, so the Tier B dictionary (built from the dev split only) works better than it would on free speech. Accuracy numbers with intervals will be added from `results/` when the live runs are done; see `docs/EXPERIMENTS.md`.
 
 ## Run it
 
@@ -66,6 +80,7 @@ The API runs in replay mode by default. `LIVE=1` allows real Gnani calls and the
 - The Codec2 decoder adds random phase, so decoded audio differs between runs. Tier A results are reproducible only from the stored decoded audio in the cache.
 - Tier A recognition uses Prisma on the decoded audio as a stand-in for a human listener.
 - Credits used and remaining are in `docs/COSTS.md`. Gnani publishes no prices, so credits are UNVERIFIED until read from the dashboard.
+- Only one voice (Vasudha) and one speed (1.0) were run. Prisma v2.5, `transliterate` and the other voices were not run (credit limit).
 - Not built: voice recording in the web UI, measured voice teach-back rates, the reliability estimator.
 
 ## How this was built

@@ -46,3 +46,17 @@ A: Its decoder adds random phase, so each decode differs. Storing the first deco
 
 **Q: What is the Malayalam rule?**
 A: Malayalam stays a full language only if the pilot reaches at least 85 percent exact facts. The pilot has not been run yet.
+
+## Failures and what we learned
+
+**Q: Did anything go wrong?**
+A: Yes. The first audio-tier run scored almost zero, even on a clean link. The cause was a library that only compresses the first 20 milliseconds of an array, and my earlier check only measured the output length, so it did not notice. We found it because the numbers were absurd, fixed the code, added a test that checks the audio really survives, and re-ran. It cost 336 extra calls. The failed results are kept in `results/tiers_invalid_codec_bug.jsonl`.
+
+**Q: What did the context hint do?**
+A: Giving Prisma the list of place names fixed all the place-name mistakes (Hindi 80 to 91 of 91 facts, English 87 to 91). But the list is closed, so on open vocabulary the gain would be smaller.
+
+**Q: What is the main result?**
+A: On a clean link, audio and text carry about the same facts, but audio costs roughly 50 to 70 times more bytes than the transcript. As packet loss rises, audio drops quickly (English from 0.88 to 0.32 of facts at 30 percent loss) while the text tiers hold much better. Details and intervals are in E5.
+
+**Q: Why is Malayalam OK?**
+A: In the pilot it met the 85 percent rule, and on the 28 test messages it got 90 of 91 facts right with or without the hint. Hindi was the weakest on place names without the hint.

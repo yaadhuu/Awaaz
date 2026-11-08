@@ -124,7 +124,11 @@ def run_tiers(
     """Send every message as Tier A, B and C at each loss level; one record per message, tier, loss.
 
     `clean` holds the baseline transcripts (condition off) that Tier B and C start from."""
-    base = {r["id"]: r for r in clean if r["voice"] == voice and r["speed"] == speed}
+    base = {
+        r["id"]: r
+        for r in clean
+        if r["voice"] == voice and r["speed"] == speed and r["condition"] == "off"
+    }
     lk = cfg["link"]
     zdicts = {
         lang: make_dict([r["text"] for r in corpus.load(cfg["paths"]["corpus"], lang, "dev")])

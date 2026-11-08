@@ -1,23 +1,25 @@
-"""Check that pycodec2 works: mode 2400, 160 samples and 6 bytes per frame, measured bit rate."""
+"""Check Codec2 2400: frame sizes, that every frame carries data, and the measured bit rate."""
 
 import numpy as np
-from pycodec2 import Codec2
 
-SECONDS = 2
-RATE = 8000
+from tinytalk import codec
 
-c2 = Codec2(2400)
-spf, bpf = c2.samples_per_frame(), c2.bytes_per_frame()
-print(f"samples_per_frame={spf} bytes_per_frame={bpf}")
-assert (spf, bpf) == (160, 6)
-
+SECONDS, RATE = 2, 8000
 t = np.arange(SECONDS * RATE) / RATE
-pcm = (8000 * np.sin(2 * np.pi * 440 * t)).astype(np.int16)
-pcm = pcm[: len(pcm) // spf * spf]
+pcm = (6000 * np.sum([np.sin(2 * np.pi * 120 * k * t) / k for k in range(1, 12)], axis=0)).astype(
+    np.int16
+)
+data = codec.c2_encode(pcm)
+out = codec.c2_decode(data)
+print(
+    f"encoded_bytes={len(data)} nonzero_bytes={sum(b != 0 for b in data)} decoded_samples={len(out)}"
+)
+print(f"measured_bps={len(data) * 8 / SECONDS:.1f}")
 
-encoded = c2.encode(pcm)
-decoded = c2.decode(encoded)
-bps = len(encoded) * 8 / (len(pcm) / RATE)
-print(f"input_samples={len(pcm)} encoded_bytes={len(encoded)} decoded_samples={len(decoded)}")
-print(f"measured_bps={bps:.1f}")
-assert round(bps) == 2400
+
+def rms(x: np.ndarray) -> float:
+    return float(np.sqrt((x.astype(float) ** 2).mean()))
+
+
+print(f"input_rms={rms(pcm):.0f} decoded_rms={rms(out):.0f}")
+assert round(len(data) * 8 / SECONDS) == 2400 and sum(b != 0 for b in data) > 0.5 * len(data)

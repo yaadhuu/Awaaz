@@ -7,11 +7,30 @@ from tinytalk import codec
 from tinytalk.linksim import Link, make_packet, parse_packet
 
 
-def test_codec2_bit_rate_and_length() -> None:
-    pcm = np.random.default_rng(0).normal(0, 3000, 16000).astype(np.int16)  # 2 s at 8 kHz
+def _buzz(seconds: int = 2) -> np.ndarray:
+    """A voiced sound at 8 kHz: 120 Hz with harmonics and a slow volume change."""
+    t = np.arange(seconds * 8000) / 8000
+    harmonics = np.sum([np.sin(2 * np.pi * 120 * k * t) / k for k in range(1, 12)], axis=0)
+    return (6000 * harmonics * (0.6 + 0.4 * np.sin(2 * np.pi * 2 * t))).astype(np.int16)
+
+
+def _envelope(x: np.ndarray) -> np.ndarray:
+    x = x[: len(x) // 160 * 160].astype(float).reshape(-1, 160)
+    return np.sqrt((x**2).mean(axis=1))
+
+
+def test_codec2_really_encodes_every_frame() -> None:
+    # pycodec2 encodes only the first frame of an array; c2_encode loops, so the whole message
+    # must carry data and survive the round trip with about the same loudness and envelope.
+    pcm = _buzz()
     data = codec.c2_encode(pcm)
     assert len(data) * 8 / 2 == 2400
-    assert len(codec.c2_decode(data)) == len(pcm)
+    assert sum(b != 0 for b in data) > 0.5 * len(data)
+    out = codec.c2_decode(data)
+    assert len(out) == len(pcm)
+    ratio = np.sqrt((out.astype(float) ** 2).mean()) / np.sqrt((pcm.astype(float) ** 2).mean())
+    assert 0.5 < ratio < 2
+    assert np.corrcoef(_envelope(pcm), _envelope(out))[0, 1] > 0.7
 
 
 def test_resample_and_wav_roundtrip() -> None:
