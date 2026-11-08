@@ -1,6 +1,7 @@
 """Thin FastAPI layer over the library. Replay by default; LIVE=1 allows real Gnani calls."""
 
 import base64
+import hmac
 import json
 import os
 import shutil
@@ -76,36 +77,66 @@ def usage_now() -> dict[str, Any]:
     return credits.summary(cfg()["credits"], ledger_rows(), calibration())
 
 
-def check_access(code: str | None) -> None:
-    """LIVE=1 and the ACCESS_CODE secret are both needed before anything can spend credits."""
-    if not live():
-        raise HTTPException(403, "Replay mode: live Gnani calls are switched off on this server.")
-    expected = os.environ.get("ACCESS_CODE")
-    if not expected or code != expected:
-        raise HTTPException(401, "Live calls need the access code (X-Access-Code header).")
-
-
-def live_guard(request: Request, x_access_code: str | None = Header(default=None)) -> None:
-    """Access code, per-IP rate limit, daily cap and the credit cap, checked before a live call."""
-    check_access(x_access_code)
-    lc = cfg()["live"]
+def _rate_limit(request: Request) -> None:
+    """Per-IP sliding window; counted before the access code is checked, so guessing is slow too."""
     ip = request.client.host if request.client else "?"
     now = time.monotonic()
     with _hits_lock:
         q = _hits[ip]
         while q and now - q[0] > 60:
             q.popleft()
-        if len(q) >= lc["per_ip_per_minute"]:
+        if len(q) >= cfg()["live"]["per_ip_per_minute"]:
             raise HTTPException(429, "Too many live requests from this address; wait a minute.")
         q.append(now)
+
+
+def check_access(request: Request, code: str | None) -> None:
+    """LIVE=1 and the ACCESS_CODE secret are both needed before anything can spend credits."""
+    if not live():
+        raise HTTPException(403, "Replay mode: live Gnani calls are switched off on this server.")
+    _rate_limit(request)
+    expected = os.environ.get("ACCESS_CODE")
+    if not expected or not code or not hmac.compare_digest(code.encode(), expected.encode()):
+        raise HTTPException(401, "Live calls need the access code (X-Access-Code header).")
+
+
+_spend_lock = threading.Lock()
+
+
+def live_guard(request: Request, x_access_code: str | None = Header(default=None)) -> None:
+    """Access code and rate limit before a live call; the caps are checked again inside spend()."""
+    check_access(request, x_access_code)
+    _cap_check(None)
+
+
+def _cap_check(estimate: float | None) -> None:
+    """Refuse when today's limit or the credit/call cap would be passed. Sets the client's call cap."""
+    c = cfg()["credits"]
     rows = ledger_rows()
-    if credits.today_calls(rows) >= lc["daily_call_cap"]:
+    if credits.today_calls(rows) >= cfg()["live"]["daily_call_cap"]:
         raise HTTPException(429, "Today's live-call limit for this server is used up.")
-    left = credits.calls_left(cfg()["credits"], rows, calibration())
-    if left <= 0:
+    s = credits.summary(c, rows, calibration())
+    if s["level"] == "stop":
         raise HTTPException(402, "The credit cap is reached; the server refuses live calls.")
+    if s["rate_configured"]:
+        limit = c["cap_credits"] - (s["used"] or 0.0)
+        if s["remaining_credits"] is not None:
+            limit = min(limit, s["remaining_credits"])
+        worst = (estimate or 0.0) * 3  # one call plus up to two retries
+        if worst > limit:
+            raise HTTPException(402, "This call could pass the credit cap; the server refuses it.")
+        left = 3
+    else:
+        left = min(3, int(c["cap_calls"] - s["calls"]))
     g = gnani()
     g.max_calls = g._used + left
+
+
+def spend(estimate: float | None, call: Any) -> Any:
+    """Run one live call with the cap re-checked under a lock, so two requests cannot both pass."""
+    with _spend_lock:
+        _cap_check(estimate)
+        return call()
 
 
 def require_token(request: Request, x_access_code: str | None = Header(default=None)) -> None:
@@ -239,7 +270,7 @@ def send(req: SendRequest) -> SendResponse:
     truth = extract(req.text)
     c = send_facts(truth, make_link(req, "C"))
     b = send_transcript(req.text, req.lang, zdict(req.lang), make_link(req, "B"))
-    a, secs = tier_a(req, truth)
+    a, secs = spend(None, lambda: tier_a(req, truth)) if live() else tier_a(req, truth)
     reports = [a] + [
         TierReport(
             tier=s.tier, available=True, payload_bytes=s.payload_bytes,
@@ -351,10 +382,10 @@ def usage() -> dict[str, Any]:
 
 @app.post("/api/usage/calibrate")
 def calibrate(
-    req: CalibrateRequest, x_access_code: str | None = Header(default=None)
+    req: CalibrateRequest, request: Request, x_access_code: str | None = Header(default=None)
 ) -> dict[str, Any]:
     """Set the remaining balance read from the Gnani dashboard; spend after it counts down from it."""
-    check_access(x_access_code)
+    check_access(request, x_access_code)
     credits.save_calibration(
         cfg()["credits"]["calibration_file"], req.remaining, len(ledger_rows())
     )
@@ -377,19 +408,23 @@ def estimate(req: EstimateRequest) -> dict[str, Any]:
     }
 
 
-def to_wav16k(upload: bytes, suffix: str) -> tuple[bytes, float]:
-    """Any browser audio (webm, ogg, mp3, wav) to 16 kHz mono WAV with ffmpeg; temp files removed."""
+FORMATS = {
+    "audio/wav": "wav", "audio/x-wav": "wav", "audio/wave": "wav", "audio/mpeg": "mp3",
+    "audio/ogg": "ogg", "audio/webm": "webm", "audio/flac": "flac", "audio/mp4": "mp4",
+}  # fmt: skip
+
+
+def to_wav16k(upload: bytes, mime: str) -> tuple[bytes, float]:
+    """Browser audio to 16 kHz mono WAV. The input format is fixed from the checked MIME type and
+    ffmpeg may only read the pipe, so a crafted file cannot make it open other files or URLs."""
     if not shutil.which("ffmpeg"):
         raise HTTPException(500, "ffmpeg is not installed on the server.")
     tmp = Path(tempfile.mkdtemp(prefix="tinytalk-"))
     try:
-        src, dst = tmp / f"in{suffix}", tmp / "out.wav"
-        src.write_bytes(upload)
-        run = subprocess.run(
-            ["ffmpeg", "-v", "error", "-y", "-i", str(src), "-ac", "1", "-ar", "16000", str(dst)],
-            capture_output=True,
-            check=False,
-        )
+        dst = tmp / "out.wav"
+        cmd = ["ffmpeg", "-v", "error", "-y", "-protocol_whitelist", "pipe,file"]
+        cmd += ["-f", FORMATS[mime], "-i", "pipe:0", "-ac", "1", "-ar", "16000", str(dst)]
+        run = subprocess.run(cmd, input=upload, capture_output=True, check=False)
         if run.returncode != 0 or not dst.exists():
             raise HTTPException(400, "The audio file could not be read.")
         wav = dst.read_bytes()
@@ -410,12 +445,13 @@ async def stt(
 ) -> dict[str, Any]:
     """Prisma speech to text through the cached, capped client. Max 30 s and the configured size."""
     lc = cfg()["live"]
-    if (audio_file.content_type or "").split(";")[0] not in lc["upload_types"]:
+    mime = (audio_file.content_type or "").split(";")[0]
+    if mime not in lc["upload_types"] or mime not in FORMATS:
         raise HTTPException(415, f"Audio type {audio_file.content_type} is not accepted.")
     data = await audio_file.read(lc["max_upload_bytes"] + 1)
     if len(data) > lc["max_upload_bytes"]:
         raise HTTPException(413, "The audio file is too large.")
-    wav, seconds = to_wav16k(data, Path(audio_file.filename or "a.webm").suffix or ".webm")
+    wav, seconds = to_wav16k(data, mime)
     if seconds > lc["max_audio_seconds"]:
         raise HTTPException(
             413, f"Audio is {seconds:.1f} s; the limit is {lc['max_audio_seconds']} s."
@@ -427,7 +463,7 @@ async def stt(
     before = len(ledger_rows())
     _queue["waiting"] += 1
     try:
-        result = gnani().stt(wav, langs, format, terms or None, topic or None)
+        result = spend(est, lambda: gnani().stt(wav, langs, format, terms or None, topic or None))
     finally:
         _queue["waiting"] -= 1
     return {
@@ -456,7 +492,9 @@ def tts(req: TtsRequest) -> dict[str, Any]:
     before = len(ledger_rows())
     _queue["waiting"] += 1
     try:
-        audio = gnani().tts(req.text, req.language, req.voice, req.speed, audio_config)
+        audio = spend(
+            est, lambda: gnani().tts(req.text, req.language, req.voice, req.speed, audio_config)
+        )
     finally:
         _queue["waiting"] -= 1
     mime = {"wav": "audio/wav", "mp3": "audio/mpeg", "ogg": "audio/ogg"}[req.container]

@@ -1,0 +1,578 @@
+[
+ {
+  "file": "flood-00-ml__radio-short-wave-frequency-ogg__20dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-ml__radio-short-wave-frequency-ogg__10dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-ml__radio-short-wave-frequency-ogg__5dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-ml__radio-short-wave-frequency-ogg__0dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-ml__noise-pollution-filters-bird-communities__20dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-ml__noise-pollution-filters-bird-communities__10dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-ml__noise-pollution-filters-bird-communities__5dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-ml__noise-pollution-filters-bird-communities__0dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-ml__generated-shortwave-hiss__20dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-ml__generated-shortwave-hiss__10dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-ml__generated-shortwave-hiss__5dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-ml__generated-shortwave-hiss__0dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-ml__generated-hf-fading__20dB.wav",
+  "message": "flood-00-ml",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-ml__generated-hf-fading__10dB.wav",
+  "message": "flood-00-ml",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-ml__generated-hf-fading__5dB.wav",
+  "message": "flood-00-ml",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-ml__generated-hf-fading__0dB.wav",
+  "message": "flood-00-ml",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-ml__generated-vhf-squelch__20dB.wav",
+  "message": "flood-00-ml",
+  "bed": "VHF squelch bursts",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-ml__generated-vhf-squelch__10dB.wav",
+  "message": "flood-00-ml",
+  "bed": "VHF squelch bursts",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-ml__generated-vhf-squelch__5dB.wav",
+  "message": "flood-00-ml",
+  "bed": "VHF squelch bursts",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-ml__generated-vhf-squelch__0dB.wav",
+  "message": "flood-00-ml",
+  "bed": "VHF squelch bursts",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-ml__generated-morse-cw__20dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-ml__generated-morse-cw__10dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-ml__generated-morse-cw__5dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-ml__generated-morse-cw__0dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-ml__generated-digital-buzz__20dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-ml__generated-digital-buzz__10dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-ml__generated-digital-buzz__5dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-ml__generated-digital-buzz__0dB.wav",
+  "message": "flood-00-ml",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-ml__generated-mains-hum__20dB.wav",
+  "message": "flood-00-ml",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-ml__generated-mains-hum__10dB.wav",
+  "message": "flood-00-ml",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-ml__generated-mains-hum__5dB.wav",
+  "message": "flood-00-ml",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-ml__generated-mains-hum__0dB.wav",
+  "message": "flood-00-ml",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-hi__radio-short-wave-frequency-ogg__20dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-hi__radio-short-wave-frequency-ogg__10dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-hi__radio-short-wave-frequency-ogg__5dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-hi__radio-short-wave-frequency-ogg__0dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-hi__noise-pollution-filters-bird-communities__20dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-hi__noise-pollution-filters-bird-communities__10dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-hi__noise-pollution-filters-bird-communities__5dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-hi__noise-pollution-filters-bird-communities__0dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-hi__generated-shortwave-hiss__20dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-hi__generated-shortwave-hiss__10dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-hi__generated-shortwave-hiss__5dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-hi__generated-shortwave-hiss__0dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-hi__generated-hf-fading__20dB.wav",
+  "message": "flood-00-hi",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-hi__generated-hf-fading__10dB.wav",
+  "message": "flood-00-hi",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-hi__generated-hf-fading__5dB.wav",
+  "message": "flood-00-hi",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-hi__generated-hf-fading__0dB.wav",
+  "message": "flood-00-hi",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-hi__generated-vhf-squelch__20dB.wav",
+  "message": "flood-00-hi",
+  "bed": "VHF squelch bursts",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-hi__generated-vhf-squelch__10dB.wav",
+  "message": "flood-00-hi",
+  "bed": "VHF squelch bursts",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-hi__generated-vhf-squelch__5dB.wav",
+  "message": "flood-00-hi",
+  "bed": "VHF squelch bursts",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-hi__generated-vhf-squelch__0dB.wav",
+  "message": "flood-00-hi",
+  "bed": "VHF squelch bursts",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-hi__generated-morse-cw__20dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-hi__generated-morse-cw__10dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-hi__generated-morse-cw__5dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-hi__generated-morse-cw__0dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-hi__generated-digital-buzz__20dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-hi__generated-digital-buzz__10dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-hi__generated-digital-buzz__5dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-hi__generated-digital-buzz__0dB.wav",
+  "message": "flood-00-hi",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-hi__generated-mains-hum__20dB.wav",
+  "message": "flood-00-hi",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-hi__generated-mains-hum__10dB.wav",
+  "message": "flood-00-hi",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-hi__generated-mains-hum__5dB.wav",
+  "message": "flood-00-hi",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-hi__generated-mains-hum__0dB.wav",
+  "message": "flood-00-hi",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-en__radio-short-wave-frequency-ogg__20dB.wav",
+  "message": "flood-00-en",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-en__radio-short-wave-frequency-ogg__10dB.wav",
+  "message": "flood-00-en",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-en__radio-short-wave-frequency-ogg__5dB.wav",
+  "message": "flood-00-en",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-en__radio-short-wave-frequency-ogg__0dB.wav",
+  "message": "flood-00-en",
+  "bed": "Radio short wave frequency.ogg",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-en__noise-pollution-filters-bird-communities__20dB.wav",
+  "message": "flood-00-en",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-en__noise-pollution-filters-bird-communities__10dB.wav",
+  "message": "flood-00-en",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-en__noise-pollution-filters-bird-communities__5dB.wav",
+  "message": "flood-00-en",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-en__noise-pollution-filters-bird-communities__0dB.wav",
+  "message": "flood-00-en",
+  "bed": "Noise-Pollution-Filters-Bird-Communities-Based-on-Vocal-Frequency-pone.0027052.s002.ogg",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-en__generated-shortwave-hiss__20dB.wav",
+  "message": "flood-00-en",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-en__generated-shortwave-hiss__10dB.wav",
+  "message": "flood-00-en",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-en__generated-shortwave-hiss__5dB.wav",
+  "message": "flood-00-en",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-en__generated-shortwave-hiss__0dB.wav",
+  "message": "flood-00-en",
+  "bed": "Shortwave hiss with fading",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-en__generated-hf-fading__20dB.wav",
+  "message": "flood-00-en",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-en__generated-hf-fading__10dB.wav",
+  "message": "flood-00-en",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-en__generated-hf-fading__5dB.wav",
+  "message": "flood-00-en",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-en__generated-hf-fading__0dB.wav",
+  "message": "flood-00-en",
+  "bed": "HF heterodyne whistle with selective fading",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-en__generated-vhf-squelch__20dB.wav",
+  "message": "flood-00-en",
+  "bed": "VHF squelch bursts",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-en__generated-vhf-squelch__10dB.wav",
+  "message": "flood-00-en",
+  "bed": "VHF squelch bursts",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-en__generated-vhf-squelch__5dB.wav",
+  "message": "flood-00-en",
+  "bed": "VHF squelch bursts",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-en__generated-vhf-squelch__0dB.wav",
+  "message": "flood-00-en",
+  "bed": "VHF squelch bursts",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-en__generated-morse-cw__20dB.wav",
+  "message": "flood-00-en",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-en__generated-morse-cw__10dB.wav",
+  "message": "flood-00-en",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-en__generated-morse-cw__5dB.wav",
+  "message": "flood-00-en",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-en__generated-morse-cw__0dB.wav",
+  "message": "flood-00-en",
+  "bed": "Morse CW tone (CQ CQ DE VU2) in hiss",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-en__generated-digital-buzz__20dB.wav",
+  "message": "flood-00-en",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-en__generated-digital-buzz__10dB.wav",
+  "message": "flood-00-en",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-en__generated-digital-buzz__5dB.wav",
+  "message": "flood-00-en",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-en__generated-digital-buzz__0dB.wav",
+  "message": "flood-00-en",
+  "bed": "Digital interference buzz and clicks",
+  "snr_db": 0
+ },
+ {
+  "file": "flood-00-en__generated-mains-hum__20dB.wav",
+  "message": "flood-00-en",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 20
+ },
+ {
+  "file": "flood-00-en__generated-mains-hum__10dB.wav",
+  "message": "flood-00-en",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 10
+ },
+ {
+  "file": "flood-00-en__generated-mains-hum__5dB.wav",
+  "message": "flood-00-en",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 5
+ },
+ {
+  "file": "flood-00-en__generated-mains-hum__0dB.wav",
+  "message": "flood-00-en",
+  "bed": "50 Hz mains hum with hiss",
+  "snr_db": 0
+ }
+]

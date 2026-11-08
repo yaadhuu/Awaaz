@@ -56,10 +56,10 @@ def test_warning_levels_and_stop() -> None:
     ]
 
 
-def test_cap_stops_live_calls() -> None:
+def test_cap_level_reaches_stop() -> None:
     rows = [row("stt", secs=1) for _ in range(9)]
-    assert credits.calls_left(BASE, rows, None) == 1
-    assert credits.calls_left(BASE, rows + [row("tts", chars=10)], None) == 0
+    assert credits.summary(BASE, rows, None)["level"] == "warn80"
+    assert credits.summary(BASE, rows + [row("tts", chars=10)], None)["level"] == "stop"
 
 
 def test_calibration_counts_from_the_dashboard_balance(tmp_path: Path) -> None:

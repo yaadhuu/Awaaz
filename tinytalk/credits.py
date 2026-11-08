@@ -105,18 +105,6 @@ def summary(
     }
 
 
-def calls_left(
-    c: dict[str, Any], rows: list[dict[str, Any]], calibration: dict[str, Any] | None
-) -> int:
-    """How many more live attempts the cap allows; 0 means the server must refuse."""
-    s = summary(c, rows, calibration)
-    if s["level"] == "stop":
-        return 0
-    if not s["rate_configured"]:
-        return int(c["cap_calls"] - s["calls"])
-    return 10**6  # credit cap is checked per call against the estimate instead
-
-
 def today_calls(rows: list[dict[str, Any]]) -> int:
     today = time.strftime("%Y-%m-%d")
     return sum(

@@ -1,0 +1,180 @@
+{
+ "ml|both": {
+  "lang": "ml",
+  "condition": "both",
+  "altered": 14,
+  "caught": 14,
+  "catch_rate": 1.0,
+  "catch_ci": [
+   0.7846829880728186,
+   1.0
+  ],
+  "unaltered": 14,
+  "false_alarms": 1,
+  "false_alarm_rate": 0.07142857142857142,
+  "false_alarm_ci": [
+   0.012721886112291636,
+   0.3146926955395781
+  ],
+  "failures": [
+   {
+    "id": "supply-26-ml",
+    "type": "false alarm",
+    "readback": "ആലപ്പുഴ പ്രദേശത്ത് 471 ഭക്ഷണപ്പൊതികളും 241 ലിറ്റർ കുടിവെള്ളവും ആവശ്യമുണ്ട്."
+   }
+  ]
+ },
+ "hi|both": {
+  "lang": "hi",
+  "condition": "both",
+  "altered": 14,
+  "caught": 14,
+  "catch_rate": 1.0,
+  "catch_ci": [
+   0.7846829880728186,
+   1.0
+  ],
+  "unaltered": 14,
+  "false_alarms": 0,
+  "false_alarm_rate": 0.0,
+  "false_alarm_ci": [
+   0.0,
+   0.21531701192718142
+  ],
+  "failures": []
+ },
+ "en|both": {
+  "lang": "en",
+  "condition": "both",
+  "altered": 14,
+  "caught": 14,
+  "catch_rate": 1.0,
+  "catch_ci": [
+   0.7846829880728186,
+   1.0
+  ],
+  "unaltered": 14,
+  "false_alarms": 0,
+  "false_alarm_rate": 0.0,
+  "false_alarm_ci": [
+   0.0,
+   0.21531701192718142
+  ],
+  "failures": []
+ },
+ "ml|off": {
+  "lang": "ml",
+  "condition": "off",
+  "altered": 14,
+  "caught": 14,
+  "catch_rate": 1.0,
+  "catch_ci": [
+   0.7846829880728186,
+   1.0
+  ],
+  "unaltered": 14,
+  "false_alarms": 1,
+  "false_alarm_rate": 0.07142857142857142,
+  "false_alarm_ci": [
+   0.012721886112291636,
+   0.3146926955395781
+  ],
+  "failures": [
+   {
+    "id": "supply-26-ml",
+    "type": "false alarm",
+    "readback": "ആലപ്പുഴ പ്രദേശത്ത് 471 ഭക്ഷണപ്പൊതികളും 241 ലിറ്റർ കുടിവെള്ളവും ആവശ്യമുണ്ട്."
+   }
+  ]
+ },
+ "hi|off": {
+  "lang": "hi",
+  "condition": "off",
+  "altered": 14,
+  "caught": 14,
+  "catch_rate": 1.0,
+  "catch_ci": [
+   0.7846829880728186,
+   1.0
+  ],
+  "unaltered": 14,
+  "false_alarms": 7,
+  "false_alarm_rate": 0.5,
+  "false_alarm_ci": [
+   0.2679886791947528,
+   0.7320113208052472
+  ],
+  "failures": [
+   {
+    "id": "flood-03-hi",
+    "type": "false alarm",
+    "readback": "कुठनाड के लिए बाढ़ की चेतावनी। जलस्तर सुबह 6:00 बजे तक 4 meter तक पहुँच जाएगा।"
+   },
+   {
+    "id": "boats-11-hi",
+    "type": "false alarm",
+    "readback": "आलुआ के पास 20 नावें हैं, उन पर 173 लोग सवार हैं।"
+   },
+   {
+    "id": "boats-13-hi",
+    "type": "false alarm",
+    "readback": "अलपूझा के पास 13 नावें हैं, उन पर 181 लोग सवार हैं।"
+   },
+   {
+    "id": "supply-23-hi",
+    "type": "false alarm",
+    "readback": "चालाकुड़ी में 69 खाने के packet और 314 liter पीने का पानी चाहिए।"
+   },
+   {
+    "id": "supply-26-hi",
+    "type": "false alarm",
+    "readback": "अलग पूजा में 471 खाने के packet और 741 liter पीने का पानी चाहिए।"
+   },
+   {
+    "id": "medical-31-hi",
+    "type": "false alarm",
+    "readback": "अलग पूजा में 37 लोगों को चिकित्सा सहायता चाहिए। सबसे नज़दीकी अस्पताल 6 km दूर है। डॉक्टर शाम 9 बजे तक पहुँचेंगे।"
+   },
+   {
+    "id": "medical-35-hi",
+    "type": "false alarm",
+    "readback": "पत्तन मतिट्टा में 33 लोगों को चिकित्सा सहायता चाहिए। सबसे नज़दीकी अस्पताल 23 किलोमीटर दूर है। डॉक्टर शाम 4 बजे तक पहुँचेंगे।"
+   }
+  ]
+ },
+ "en|off": {
+  "lang": "en",
+  "condition": "off",
+  "altered": 14,
+  "caught": 14,
+  "catch_rate": 1.0,
+  "catch_ci": [
+   0.7846829880728186,
+   1.0
+  ],
+  "unaltered": 14,
+  "false_alarms": 3,
+  "false_alarm_rate": 0.21428571428571427,
+  "false_alarm_ci": [
+   0.0757124833691637,
+   0.4758972377320828
+  ],
+  "failures": [
+   {
+    "id": "flood-03-en",
+    "type": "false alarm",
+    "readback": "Flood warning for Kuthnad. Water level will reach 4 meters by 6 am."
+   },
+   {
+    "id": "flood-09-en",
+    "type": "false alarm",
+    "readback": "Flood warning for Kothi court. Water level will reach 3 meters by 9 am."
+   },
+   {
+    "id": "supply-23-en",
+    "type": "false alarm",
+    "readback": "Supplies needed at Chalakuri: 69 food packets and 314 litres of drinking water."
+   }
+  ]
+ }
+}

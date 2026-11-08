@@ -69,6 +69,9 @@ def test_curve_404_until_built_and_picker_grid() -> None:
 
 
 def test_live_send_needs_the_access_code(monkeypatch: pytest.MonkeyPatch) -> None:
+    from tinytalk import api
+
+    api._hits.clear()
     monkeypatch.setenv("LIVE", "1")
     monkeypatch.setenv("ACCESS_CODE", "secret")
     body = {"text": TEXT, "lang": "en"}
@@ -146,3 +149,16 @@ def test_stt_rejects_wrong_type(monkeypatch: pytest.MonkeyPatch) -> None:
     assert (
         client.post("/api/stt", files=files, headers={"X-Access-Code": "secret"}).status_code == 415
     )
+
+
+def test_wrong_codes_are_rate_limited_too(monkeypatch: pytest.MonkeyPatch) -> None:
+    from tinytalk import api
+
+    live_env(monkeypatch, [])
+    body = {"text": "hello", "language": "en-IN", "voice": "Vasudha"}
+    n = api.cfg()["live"]["per_ip_per_minute"]
+    codes = [
+        client.post("/api/tts", json=body, headers={"X-Access-Code": f"guess{i}"}).status_code
+        for i in range(n + 1)
+    ]
+    assert codes[:n] == [401] * n and codes[n] == 429
