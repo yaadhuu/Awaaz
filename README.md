@@ -16,6 +16,16 @@ At the receiver, a voice teach-back says the facts back and the system checks th
 
 **Everything here is simulated.** The link (2, 5 and 10 kbps; 0, 10, 20 and 30 percent packet loss, in bursts) is a software model. There was no real radio test. All speech is synthetic (Gnani Timbre). No real people were recorded.
 
+## The app
+
+Pick or type a message, set the simulated link (speed and packet loss), and TinyTalk shows which tier it would send, why, what it costs, and which facts arrive. Every packet is drawn, so you can see audio breaking up while the facts-only message is one packet. A teach-back panel lets you change one number in the receiver's read-back and watch it get caught. An evidence section shows the measured curve. Works in Malayalam, Hindi and English, light and dark, on phones and desktops, and by keyboard.
+
+| Light | Dark |
+|---|---|
+| ![Light](docs/screenshots/desktop-light.png) | ![Dark](docs/screenshots/desktop-dark.png) |
+| ![Bad link, transcript chosen](docs/screenshots/loss30.png) | ![Mobile](docs/screenshots/mobile-view.png) |
+| ![Malayalam](docs/screenshots/ml.png) | ![Hindi](docs/screenshots/hi.png) |
+
 ## Architecture
 
 ```mermaid
@@ -60,7 +70,8 @@ Offline sizes of packed messages (`results/sizes.json`, test split, average byte
 ```
 uv sync
 make check          # ruff, mypy, pytest (no network, no credits)
-make demo           # prints the two commands that start the API and the web app
+make demo           # prints the two commands that start the API and the web app (http://localhost:5173)
+make web-check      # web build, component tests and Playwright end-to-end tests (mocked API)
 make reproduce      # rebuilds the curve from saved results (no credits)
 ```
 
@@ -83,6 +94,7 @@ The API runs in replay mode by default. `LIVE=1` allows real Gnani calls and the
 - Tier A recognition uses Prisma on the decoded audio as a stand-in for a human listener.
 - Credits used and remaining are in `docs/COSTS.md`. Gnani publishes no prices, so credits are UNVERIFIED until read from the dashboard.
 - Only one voice (Vasudha) and one speed (1.0) were run. Prisma v2.5, `transliterate` and the other voices were not run (credit limit).
+- The app's Hindi and Malayalam interface text is machine-written and unreviewed. In replay mode the app shows Tier A's size and packets but cannot read its facts (that needs live Prisma).
 - Not built: voice recording in the web UI, measured voice teach-back rates, the reliability estimator.
 
 ## How this was built

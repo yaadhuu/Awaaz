@@ -29,6 +29,7 @@ class LinkResult:
     bytes_sent: int  # on the air, headers included
     airtime_s: float
     resends: int = field(default=0)
+    states: list[str] = field(default_factory=list)  # per packet: ok, resent or lost
 
     @property
     def data(self) -> bytes:
@@ -73,7 +74,12 @@ class Link:
         return [payload[i : i + n] for i in range(0, len(payload), n)] or [b""]
 
     def _result(
-        self, received: list[bytes | None], tx: int, wire_bytes: int, resends: int
+        self,
+        received: list[bytes | None],
+        tx: int,
+        wire_bytes: int,
+        resends: int,
+        tries: list[int],
     ) -> LinkResult:
         return LinkResult(
             delivered=all(p is not None for p in received),
@@ -83,6 +89,10 @@ class Link:
             bytes_sent=wire_bytes,
             airtime_s=wire_bytes * 8 / self.rate_bps,
             resends=resends,
+            states=[
+                "lost" if p is None else "ok" if n <= 1 else "resent"
+                for p, n in zip(received, tries, strict=True)
+            ],
         )
 
     def send_stream(self, payload: bytes) -> LinkResult:
@@ -90,18 +100,20 @@ class Link:
         chunks = self._chunks(payload)
         got = [None if self._lost() else c for c in chunks]
         wire = sum(self.header_bytes + len(c) for c in chunks)
-        return self._result(got, len(chunks), wire, 0)
+        return self._result(got, len(chunks), wire, 0, [1] * len(chunks))
 
     def send_reliable(self, payload: bytes) -> LinkResult:
         """Tier B and C: resend lost packets, up to max_resends rounds."""
         chunks = self._chunks(payload)
         got: list[bytes | None] = [None] * len(chunks)
         pending = list(range(len(chunks)))
+        tries = [0] * len(chunks)
         tx = wire = resends = 0
         for attempt in range(self.max_resends + 1):
             still = []
             for i in pending:
                 tx += 1
+                tries[i] += 1
                 wire += self.header_bytes + len(chunks[i])
                 resends += attempt > 0
                 if self._lost():
@@ -113,4 +125,4 @@ class Link:
             pending = still
             if not pending:
                 break
-        return self._result(got, tx, wire, resends)
+        return self._result(got, tx, wire, resends, tries)

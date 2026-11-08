@@ -94,3 +94,13 @@ def test_crc_detects_corruption() -> None:
     p = make_packet(7, b"hello")
     assert parse_packet(p) == (7, b"hello")
     assert parse_packet(p[:-1] + b"X") is None
+
+
+def test_packet_states_match_counts() -> None:
+    stream = Link(5, 30, seed=1).send_stream(bytes(4800))
+    assert stream.states.count("lost") == stream.received.count(None)
+    reliable = Link(5, 30, seed=1).send_reliable(bytes(4800))
+    assert len(reliable.states) == reliable.packets
+    assert reliable.states.count("resent") > 0
+    clean = Link(5, 0, seed=1).send_reliable(bytes(96))
+    assert clean.states == ["ok", "ok"]

@@ -60,3 +60,14 @@ A: On a clean link, audio and text carry about the same facts, but audio costs r
 
 **Q: Why is Malayalam OK?**
 A: In the pilot it met the 85 percent rule, and on the 28 test messages it got 90 of 91 facts right with or without the hint. Hindi was the weakest on place names without the hint.
+
+## The app
+
+**Q: What does the app show?**
+A: You choose a message and a link quality. It shows which tier the link meter picks, why in plain words, how many bytes and how much airtime each tier needs, a strip of packets for each tier (lost ones in red), and which facts reached the receiver. The teach-back panel catches a changed number. The evidence section shows the measured curve.
+
+**Q: Is the app talking to Gnani live?**
+A: Not by default. It runs in replay mode on cached results, so it costs nothing. Live mode needs a secret token and an explicit switch.
+
+**Q: Why can't the audio tier show its facts in the app?**
+A: Reading facts from audio needs speech recognition, which costs credits. In replay mode the app shows Tier A's size and packet losses only. The measured Tier A results are in the evidence section.

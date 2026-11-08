@@ -81,6 +81,7 @@ class TierReport(BaseModel):
     delivered: bool | None
     resends: int
     facts_received: dict[str, Any] | None
+    packet_states: list[str] = []
     note: str | None = None
 
 
@@ -138,6 +139,7 @@ def tier_a(req: SendRequest, truth: Facts) -> tuple[TierReport, float]:
             tier="A", available=True, payload_bytes=sent.payload_bytes,
             bytes_sent=sent.link.bytes_sent, airtime_s=sent.link.airtime_s,
             delivered=sent.link.delivered, resends=0, facts_received=facts, note=note,
+            packet_states=sent.link.states,
         ),
         pipeline.audio_seconds(wav),
     )  # fmt: skip
@@ -168,6 +170,7 @@ def send(req: SendRequest) -> SendResponse:
             bytes_sent=s.link.bytes_sent, airtime_s=s.link.airtime_s,
             delivered=s.link.delivered, resends=s.link.resends,
             facts_received=s.facts.to_dict() if s.facts else None,
+            packet_states=s.link.states,
         )
         for s in (b, c)
     ]  # fmt: skip

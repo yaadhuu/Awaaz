@@ -9,6 +9,7 @@ Newest entry at the bottom. Format and rules are in `CLAUDE.md`.
 - Build freeze time is not set. Deadline in the playbook is 11:59 PM IST, Tue 10 Nov 2026. Yadhu to pick a freeze time. (Added 2026-11-08)
 - Gnani credit-to-call conversion rate and the pilot and main-run credit budgets are not given. Stages 4 and 5 need them. (Added 2026-11-08)
 - Ledger format is JSONL (playbook Stage 1). The file path is still not decided; `docs/COSTS.md` reads from it. (Added 2026-11-08)
+- Review the Hindi and Malayalam interface text in `web/src/i18n.ts` (machine-written). (Added 2026-11-09)
 - Native-speaker spot-checks (for example Hindi) are expected later. Who does them, and when, is not decided. (Added 2026-11-08)
 
 ---
@@ -82,3 +83,13 @@ Newest entry at the bottom. Format and rules are in `CLAUDE.md`.
 - What could go wrong / known limits: FAILURE: the first Tier A run was invalid (336 wasted calls) because my earlier codec check only measured output length. Fixed, rerun, and logged in E5. Other limits: one voice, one speed, simulated link, templated corpus, Prisma standing in for a human listener, closed keyterm list, Hindi and Malayalam text unreviewed by native speakers, Tier A results depend on stored decoded audio in `cache/tierA`.
 - What Yadhu should be able to say if asked about this: "Our first audio result was wrong because of a bug in the codec library; we caught it because the number was absurd, fixed it, tested it properly, and reran, and the failed data is still in the repo."
 - Git commit hash: 02b78ec
+
+## 2026-11-09 IST - Web app redesign (UI/UX pass)
+- What we did: Rebuilt the web app as a clean, professional "link console" using the ui-ux-pro-max and frontend-design skills. Added a per-packet view (the API now returns packet states), tier cards with the chosen tier highlighted by a moving outline, a verdict panel with plain-language reason and four key numbers, a teach-back panel that explains the mismatch, an evidence section (chart plus table from the real results), a "how it works" strip, light and dark themes, and Malayalam, Hindi and English text. Wrote new component tests and end-to-end tests.
+- Why (the reasoning, in plain words): Judges should understand the idea in 30 seconds. The page now opens with a message already sent, and changing the link instantly shows audio falling apart while the facts-only message still gets through.
+- How it works in 3 sentences a beginner could repeat: You pick a message and how bad the connection is. The app asks our server how each of the three ways of sending would do over that connection and shows the result, packet by packet. A final panel lets you change a number on the receiving side and shows that the mismatch is caught.
+- Files touched: `web/src/*` (App, components, i18n, labels, theme), `web/e2e/main-flow.spec.ts`, `tinytalk/linksim.py`, `tinytalk/api.py`, `tests/test_link_codec.py`, `docs/screenshots/*`, `README.md`, `docs/*`.
+- Result (real numbers only) and what it means: `make check` passes (60 pytest tests). Web: build passes, 2 component test files pass (2 tests), 3 Playwright end-to-end tests pass (mocked API). I checked screenshots in light, dark, mobile, Hindi and Malayalam (saved in `docs/screenshots/`). Not run: an automated accessibility scanner (axe), a test on a real phone, the app in LIVE mode.
+- What could go wrong / known limits: The Hindi and Malayalam interface strings are machine-written and unreviewed. In replay mode the app cannot read facts from Tier A audio. Messages typed by the user that are not in the corpus have no stored audio, so Tier A shows an estimated size. Contrast was chosen to meet 4.5:1 but was not measured with a tool.
+- What Yadhu should be able to say if asked about this: "The interface is built around one idea: show the packets. You can see the audio message break up while the facts message survives, and you can try the teach-back yourself."
+- Git commit hash: b5ee9dd

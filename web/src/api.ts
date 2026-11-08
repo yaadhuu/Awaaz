@@ -17,6 +17,7 @@ export interface TierReport {
   delivered: boolean | null
   resends: number
   facts_received: Facts | null
+  packet_states: ('ok' | 'resent' | 'lost')[]
   note: string | null
 }
 
