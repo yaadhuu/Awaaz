@@ -18,7 +18,7 @@ paths:
   corpus: data/corpus
 
 credits:
-  max_calls: null     # GNANI_MAX_CALLS cap; not decided yet
+  max_calls: 4        # smoke-test cap; raise before the pilot
   max_credits: null   # needs the credit conversion rate; not given yet
 
 concurrency:

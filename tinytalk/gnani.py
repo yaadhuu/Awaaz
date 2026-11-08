@@ -58,7 +58,9 @@ def _wav_seconds(audio: bytes) -> float | None:
     """Duration for the ledger; None if the bytes are not a WAV file."""
     try:
         with wave.open(io.BytesIO(audio)) as w:
-            return float(w.getnframes() / w.getframerate())
+            # Gnani's streamed WAV header can claim a huge frame count, so trust the byte length.
+            real = (len(audio) - 44) // (w.getsampwidth() * w.getnchannels())
+            return float(min(w.getnframes(), real) / w.getframerate())
     except (wave.Error, EOFError):
         return None
 

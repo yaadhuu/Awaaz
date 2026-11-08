@@ -42,3 +42,13 @@ Newest entry at the bottom. Format and rules are in `CLAUDE.md`.
 - What could go wrong / known limits: The module layout is my reading of the playbook (four names, `corpus`, `estimator`, `teachback`, `api`, are UNVERIFIED). `make` is only on the PATH of new terminals; in an old shell call it by its full path. `package = false` means `import tinytalk` works only from the repo root (pytest is set up for that). Seeds, voices, the credit cap and STT concurrency are `null` in `config.yaml`.
 - What Yadhu should be able to say if asked about this: "Before writing any feature we built an empty, tested skeleton with one settings file and one command that checks everything, so each later stage starts from a green state."
 - Git commit hash: pending (filled in with the next commit)
+
+## 2026-11-08 23:34 IST - Live smoke test passes (Stage 1 live check)
+- What we did: Put the Gnani key in the git-ignored `.env`. Set `credits.max_calls` to 4. Ran `scripts/smoke_gnani.py`: one Timbre call, then one Prisma call on that audio. Found and fixed a wrong audio length in the ledger. Aligned the client with the Gnani docs and wrote `docs/GNANI_NOTES.md`.
+- Why (the reasoning, in plain words): Before building on the API we needed proof that our client really talks to it and that the response fields are what the docs say.
+- How it works in 3 sentences a beginner could repeat: Our client speaks a Hindi sentence with Gnani's voice model, then sends that audio to Gnani's speech-to-text and gets the words back. Every call is written to a ledger file and stored in a cache, so repeating it later costs nothing. A call cap stops the program before it spends more than we allowed.
+- Files touched: `tinytalk/gnani.py`, `tests/test_gnani.py`, `scripts/smoke_gnani.py`, `config.yaml`, `docs/GNANI_NOTES.md`, `docs/EXPERIMENTS.md`, `docs/COSTS.md`, `docs/DECISIONS.md`.
+- Result (real numbers only) and what it means: See E0 in `docs/EXPERIMENTS.md`: both calls returned HTTP 200 on the first attempt; the transcript was `बाढ़ की चेतावनी, 50 लोग फंसे हैं।`. `make check` passes with 11 tests. Live calls so far: 2 of 4. Credits used: UNVERIFIED (docs give no prices).
+- What could go wrong / known limits: One sentence only, so no accuracy claim. `keyterms` and Malayalam are untested live. The key was pasted into the chat, so it sits in the chat history; rotate it after the hackathon. The first ledger row has a wrong `audio_seconds`.
+- What Yadhu should be able to say if asked about this: "Every Gnani call goes through one client with a cache, a ledger and a hard cap, and I proved it live with a Hindi round trip before building on it."
+- Git commit hash: pending (filled in with the next commit)

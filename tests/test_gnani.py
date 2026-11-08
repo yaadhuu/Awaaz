@@ -117,3 +117,20 @@ def test_keyterms_field_name_matches_docs(tmp_path: Path) -> None:
 
     make(tmp_path, handler, max_calls=10).stt(WAV, ["ml-IN"], keyterms=["Kochi"])
     assert b'name="keyterms"' in sent[0].content
+
+
+def test_wav_seconds_ignores_bogus_header_frame_count() -> None:
+    import struct
+
+    from tinytalk.gnani import _wav_seconds
+
+    pcm = b"\0\0" * 16000  # 1 s of 16 kHz 16-bit mono
+    header = (
+        b"RIFF"
+        + struct.pack("<I", 0x7FFFFFFF)
+        + b"WAVEfmt "
+        + struct.pack("<IHHIIHH", 16, 1, 1, 16000, 32000, 2, 16)
+        + b"data"
+        + struct.pack("<I", 0x7FFFFFFF - 36)
+    )
+    assert _wav_seconds(header + pcm) == 1.0
