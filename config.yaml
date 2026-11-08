@@ -17,8 +17,22 @@ paths:
   corpus: data/corpus
 
 credits:
-  max_calls: 4        # smoke-test cap; raise before the pilot
-  max_credits: null   # needs the credit conversion rate; not given yet
+  max_calls: 4        # smoke-test cap used by scripts/smoke_gnani.py only
+  starting_balance: 5000          # credits at the start (Yadhu); calibrate from the dashboard in /usage
+  credits_per_audio_second: null  # Prisma; not published by Gnani, set once known
+  credits_per_1k_chars: null      # Timbre; not published by Gnani, set once known
+  cap_credits: 4500               # hard stop for estimated credits spent (needs the rates)
+  cap_calls: 1200                 # hard stop for total live attempts in the ledger while rates are unknown
+  warn_at: [0.5, 0.8, 0.95]       # warn at these shares of the cap
+  confirm_above: 25               # ask for a confirm click above this estimate (credits, or calls)
+  calibration_file: results/credit_calibration.json
+
+live:
+  daily_call_cap: 100             # live attempts per day across all users
+  per_ip_per_minute: 6
+  max_upload_bytes: 5000000
+  max_audio_seconds: 30
+  upload_types: [audio/wav, audio/x-wav, audio/wave, audio/mpeg, audio/ogg, audio/webm, audio/flac, audio/mp4]
 
 concurrency:
   stt: 1              # Gnani allows one active request at a time per account (docs, errors page)

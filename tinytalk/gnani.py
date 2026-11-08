@@ -169,6 +169,17 @@ class Gnani:
             return resp
         finally:
             fields = extra(resp) if extra and resp is not None and resp.status_code == 200 else {}
+            if resp is not None:
+                # Gnani documents no usage or balance fields; keep any such header if it appears.
+                found = {
+                    k: v
+                    for k, v in resp.headers.items()
+                    if any(
+                        w in k.lower() for w in ("credit", "usage", "balance", "quota", "remaining")
+                    )
+                }
+                if found:
+                    fields["usage_headers"] = found
             self._log(
                 {
                     **row,

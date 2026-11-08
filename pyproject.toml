@@ -74,4 +74,4 @@ dev = [
 ]
 
 [tool.ruff.lint]
-ignore = ["SIM905", "ISC004"]  # word lists are easier to read as split strings
+ignore = ["SIM905", "ISC004", "B008"]  # word lists read better as split strings; FastAPI uses File() defaults
