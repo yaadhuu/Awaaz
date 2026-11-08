@@ -43,7 +43,7 @@ class CapExceeded(RuntimeError):
 
 
 class _Retryable(Exception):
-    """HTTP 429 or 5xx: worth another try."""
+    """HTTP 429 or 5xx, or a connection error: worth another try."""
 
 
 def _digest(*parts: bytes | str) -> str:
@@ -69,6 +69,8 @@ def _stt_fields(resp: httpx.Response) -> dict[str, Any]:
     return {
         "detected_language_code": body.get("detected_language_code"),
         "processing_time": body.get("processing_time"),
+        "end_to_end_latency": body.get("end_to_end_latency"),
+        "truncated": body.get("truncated", False),
     }
 
 
@@ -94,7 +96,9 @@ class Gnani:
         self._api_key = api_key
         self._http = httpx.Client(base_url=BASE_URL, transport=transport, timeout=60)
         self._sleep = sleep
-        self._tts_lock = threading.Lock()  # Timbre allows one active request at a time
+        self._lock = (
+            threading.Lock()
+        )  # the account allows one active request at a time (STT and TTS)
         self._used = self._calls_in_ledger()
 
     def _calls_in_ledger(self) -> int:
@@ -139,21 +143,27 @@ class Gnani:
             self._used += 1
             attempts += 1
             headers = {"X-API-Key-ID": self._key(), "X-API-Request-ID": request_id}
-            last = self._http.post(path, headers=headers, **kwargs)
+            try:
+                last = self._http.post(path, headers=headers, **kwargs)
+            except httpx.TransportError as exc:
+                raise _Retryable(type(exc).__name__) from exc
             if last.status_code == 429 or last.status_code >= 500:
                 raise _Retryable(str(last.status_code))
             return last
 
         retrying = Retrying(
             retry=retry_if_exception_type(_Retryable),
-            stop=stop_after_attempt(5),
-            wait=wait_exponential(multiplier=1, max=20),
+            stop=stop_after_attempt(3),  # Gnani docs: three attempts, 0.5 s, 1 s, 2 s
+            wait=wait_exponential(multiplier=0.5, max=2),
             sleep=self._sleep,
             retry_error_callback=lambda _state: last,
         )
         resp: httpx.Response | None = None
         try:
-            resp = retrying(once)
+            with self._lock:
+                resp = retrying(once)
+            if resp is None:
+                raise RuntimeError("Gnani unreachable after 3 attempts")
             return resp
         finally:
             fields = extra(resp) if extra and resp is not None and resp.status_code == 200 else {}
@@ -187,7 +197,7 @@ class Gnani:
         if len(lang_codes) > 1:
             form["multi_lang_codes"] = ",".join(lang_codes)
         if keyterms:
-            form["keywords"] = json.dumps(keyterms, ensure_ascii=False)
+            form["keyterms"] = json.dumps(keyterms, ensure_ascii=False)
         if topic:
             form["topic"] = topic
         if previous_text:
@@ -269,8 +279,7 @@ class Gnani:
             return audio
         if self.replay:
             raise ReplayMiss(f"replay mode: tts miss for {language}/{voice} ({len(text)} chars)")
-        with self._tts_lock:
-            resp = self._post("/api/v1/tts/inference", row, json=body)
+        resp = self._post("/api/v1/tts/inference", row, json=body)
         resp.raise_for_status()
         self.cache[key] = resp.content
         return resp.content

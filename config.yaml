@@ -22,8 +22,8 @@ credits:
   max_credits: null   # needs the credit conversion rate; not given yet
 
 concurrency:
-  stt: null           # not decided yet
-  tts: 1              # Timbre allows one active request at a time
+  stt: 1              # Gnani allows one active request at a time per account (docs, errors page)
+  tts: 1
 
 clip_max_seconds: 30  # Prisma limit
 

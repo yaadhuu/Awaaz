@@ -95,3 +95,25 @@ def test_request_sends_model_format_and_key(tmp_path: Path) -> None:
     assert b'name="format"' in body and b"transcribe" in body
     assert sent[0].headers["x-api-key-id"] == "test-key"
     assert "test-key" not in (tmp_path / "ledger.jsonl").read_text("utf-8")
+
+
+def test_connection_error_is_retried_then_fails_cleanly(tmp_path: Path) -> None:
+    def handler(r: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("down")
+
+    g = make(tmp_path, handler, max_calls=10)
+    with pytest.raises(RuntimeError, match="unreachable"):
+        g.tts("hello", "en-IN", "Vasudha")
+    row = rows(tmp_path)[0]
+    assert (row["attempts"], row["status"]) == (3, "error")
+
+
+def test_keyterms_field_name_matches_docs(tmp_path: Path) -> None:
+    sent: list[httpx.Request] = []
+
+    def handler(r: httpx.Request) -> httpx.Response:
+        sent.append(r)
+        return ok_stt(r)
+
+    make(tmp_path, handler, max_calls=10).stt(WAV, ["ml-IN"], keyterms=["Kochi"])
+    assert b'name="keyterms"' in sent[0].content
