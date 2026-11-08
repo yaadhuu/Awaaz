@@ -37,6 +37,7 @@ pytest passes, the web build passes, a Playwright smoke test passes and the READ
 - Tests: hypothesis for property tests (pack/unpack round trip, normaliser idempotence), respx for fake HTTP, pytest for the rest. Live API only in the stages that say so.
 - Frontend: Noto Sans fonts imported, react-query for server state, i18next for ml/hi/en, framer-motion for the tier-switch animation, @ricky0123/vad-web for end-of-speech, vitest and testing-library for components, Playwright for e2e.
 - Plugins and skills, when to use: feature-dev at the start of a stage to design it; superpowers for planning, test-first and debugging; security-guidance and code-review before each stage's final commit; commit-commands for commits; ui-ux-pro-max only in Stage 11.
+- Animation: use the motion skill (motion@claude-skills) for all animation work. Import from "motion/react", use LazyMotion + domAnimation + the `m` component, wrap the app in `<MotionConfig reducedMotion="user">`, animate transform and opacity only (plus `layout`), 150 to 400 ms, springs only for the dial needle and the tier switch.
 - Do not add a library that is not listed here without logging a decision in docs/DECISIONS.md.
 
 ## Working mode (set by Yadhu, overrides docs/BUILD_PLAYBOOK.md process rules)
