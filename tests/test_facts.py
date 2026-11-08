@@ -75,3 +75,9 @@ def test_wer_cer() -> None:
 @given(st.text(max_size=60))
 def test_normalise_is_idempotent(text: str) -> None:
     assert normalise(normalise(text)) == normalise(text)
+
+
+def test_malayalam_unit_with_joined_suffix() -> None:
+    # Prisma wrote "മീറ്ററാകും" (metre + will be) as one word in the pilot.
+    assert extract("ജലനിരപ്പ് 4 മീറ്ററാകും").numbers == ((4, "metres"),)
+    assert extract("3 കിലോമീറ്ററാണ്").numbers == ((3, "km"),)

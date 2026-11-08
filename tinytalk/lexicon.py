@@ -5,7 +5,11 @@ LANGS = ("ml", "hi", "en")
 # place id -> names; the first name of each language is the one the templates print.
 PLACES: dict[str, dict[str, list[str]]] = {
     "aluva": {"en": ["Aluva"], "hi": ["आलुवा"], "ml": ["ആലുവ"]},
-    "chalakudy": {"en": ["Chalakudy", "Chalakkudy"], "hi": ["चालाकुडी"], "ml": ["ചാലക്കുടി"]},
+    "chalakudy": {
+        "en": ["Chalakudy", "Chalakkudy", "Chalakudi"],
+        "hi": ["चालाकुडी"],
+        "ml": ["ചാലക്കുടി"],
+    },
     "kuttanad": {"en": ["Kuttanad"], "hi": ["कुट्टनाड"], "ml": ["കുട്ടനാട്"]},
     "pathanamthitta": {
         "en": ["Pathanamthitta"],
@@ -23,12 +27,14 @@ PLACES: dict[str, dict[str, list[str]]] = {
 }
 
 # unit id -> word beginnings (a token that starts with one of these is that unit).
+# Malayalam words ending in a chillu (ർ) change when a suffix joins (മീറ്റർ + ആകും -> മീറ്ററാകും),
+# so those stems stop before the last letter.
 UNIT_STEMS: dict[str, list[str]] = {
     "people": ["people", "person", "लोग", "व्यक्ति", "ആളുക", "പേർ"],
     "boats": ["boat", "नाव", "नौका", "ബോട്ട"],
-    "km": ["kilomet", "kilometer", "km", "किलोमीटर", "കിലോമീറ്റർ"],
-    "metres": ["metre", "meter", "मीटर", "മീറ്റർ"],
-    "litres": ["litre", "liter", "लीटर", "ലിറ്റർ"],
+    "km": ["kilomet", "kilometer", "km", "किलोमीटर", "കിലോമീറ്റ"],
+    "metres": ["metre", "meter", "मीटर", "മീറ്റ"],
+    "litres": ["litre", "liter", "लीटर", "ലിറ്റ"],
     "food_packets": ["food", "packet", "पैकेट", "खाने", "ഭക്ഷണ", "പൊതി"],
 }
 

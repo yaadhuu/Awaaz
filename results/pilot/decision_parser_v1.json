@@ -1,0 +1,9 @@
+{
+ "rule": "Malayalam stays a full language only at >= 85% exact facts",
+ "ml_fact_rate": 0.8709677419354839,
+ "ml_fact_rate_ci": [
+  0.7114724304561464,
+  0.9486579883535524
+ ],
+ "ml_stays_full": true
+}
