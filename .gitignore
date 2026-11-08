@@ -14,3 +14,4 @@ data/audio/
 !assets/beds/*.wav
 !web/public/assets/**/*.mp3
 !web/public/data/**/*.mp3
+.shots/
