@@ -1,0 +1,20 @@
+{
+ "ml": {
+  "test_messages": 28,
+  "raw_utf8_bytes": 226.28571428571428,
+  "tier_b_bytes": 25.821428571428573,
+  "tier_c_bytes": 6.607142857142857
+ },
+ "hi": {
+  "test_messages": 28,
+  "raw_utf8_bytes": 189.35714285714286,
+  "tier_b_bytes": 25.642857142857142,
+  "tier_c_bytes": 6.607142857142857
+ },
+ "en": {
+  "test_messages": 28,
+  "raw_utf8_bytes": 76.46428571428571,
+  "tier_b_bytes": 26.5,
+  "tier_c_bytes": 6.607142857142857
+ }
+}

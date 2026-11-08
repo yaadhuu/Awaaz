@@ -154,7 +154,10 @@ def do_curve(cfg: dict[str, Any]) -> None:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    points = curve(load_jsonl(Path("results/tiers.jsonl")), cfg["link"]["rates_kbps"])
+    src = Path("results/tiers.jsonl")
+    if not src.exists():
+        raise SystemExit(f"{src} not found: run the tiers stage first (it needs Gnani credits).")
+    points = curve(load_jsonl(src), cfg["link"]["rates_kbps"])
     Path("results/curve.json").write_text(json.dumps(points, indent=1), "utf-8")
     fig, axes = plt.subplots(1, len(LANGS), figsize=(13, 4), sharey=True)
     colors = {"A": "tab:red", "B": "tab:blue", "C": "tab:green"}

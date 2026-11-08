@@ -1,0 +1,77 @@
+# TinyTalk
+
+Voice messages over weak links, by sending text instead of audio.
+
+When a link is slow or lossy (think flood relief with a damaged network), a voice message may not get through. TinyTalk measures the link and picks what to send:
+
+| Tier | What is sent | Size idea |
+|------|--------------|-----------|
+| A | Audio, compressed with Codec2 at 2400 bps (fallback: Opus 6 kbps) | 300 bytes per second of speech |
+| B | The full transcript, packed (place codebook, binary numbers, zstd dictionary) | tens of bytes |
+| C | Only the critical facts: places, numbers with units, times | about 7 bytes |
+
+At the receiver, a voice teach-back says the facts back and the system checks that they match.
+
+**Everything here is simulated.** The link (2, 5 and 10 kbps; 0, 10, 20 and 30 percent packet loss, in bursts) is a software model. There was no real radio test. All speech is synthetic (Gnani Timbre). No real people were recorded.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  M[Message text] --> T[Timbre TTS: synthetic speech]
+  T --> C2[Codec2 2400 bps] --> L1[Link simulator] --> S1[Prisma STT] --> F1[Fact parser]
+  S0[Prisma STT on clean audio] --> TR[Transcript] --> P[Pack: codebook + zstd] --> L2[Link simulator, resends] --> F2[Fact parser]
+  TR --> FX[Fact parser] --> FP[Pack facts, ~7 bytes] --> L3[Link simulator, resends] --> F3[Facts]
+  F1 & F2 & F3 --> E[Score against known facts] --> CURVE[Facts correct vs bytes per minute]
+```
+
+Only `tinytalk/gnani.py` talks to Gnani. Every call goes through a disk cache, a ledger (`results/ledger.jsonl`), a call cap, retries and a replay mode that never calls the API.
+
+## Results
+
+Not measured yet on live audio. Measured so far (offline, `results/sizes.json`, test split of 28 messages per language, averages in bytes):
+
+| Language | Raw UTF-8 text | Tier B | Tier C |
+|----------|---------------:|-------:|-------:|
+| Malayalam | 226.3 | 25.8 | 6.6 |
+| Hindi | 189.4 | 25.6 | 6.6 |
+| English | 76.5 | 26.5 | 6.6 |
+
+The corpus is templated, so the Tier B dictionary (built from the dev split only) works better than it would on free speech. Accuracy numbers with intervals will be added from `results/` when the live runs are done; see `docs/EXPERIMENTS.md`.
+
+## Run it
+
+```
+uv sync
+make check          # ruff, mypy, pytest (no network, no credits)
+make demo           # prints the two commands that start the API and the web app
+make reproduce      # rebuilds the curve from saved results (no credits)
+```
+
+Live stages need `GNANI_API_KEY` in `.env` (see `.env.example`) and spend credits, so they are explicit:
+
+```
+uv run python -m scripts.run_stage pilot                       # dry run: counts missing calls
+uv run python -m scripts.run_stage pilot --live --max-new-calls 70
+```
+
+The API runs in replay mode by default. `LIVE=1` allows real Gnani calls and then requires `TINYTALK_TOKEN` in the `X-Tinytalk-Token` header.
+
+## Limits
+
+- Simulated link only; no radio test.
+- The corpus is 40 templated messages per language (12 places, 4 message types). It says nothing about free speech.
+- Malayalam and Hindi sentences are machine-written; a native-speaker review is pending (`docs/review/`).
+- Number words are covered for English, Hindi (1 to 99) and Malayalam (1 to 20 and tens). Prisma normally returns digits, so this is a fallback.
+- The Codec2 decoder adds random phase, so decoded audio differs between runs. Tier A results are reproducible only from the stored decoded audio in the cache.
+- Tier A recognition uses Prisma on the decoded audio as a stand-in for a human listener.
+- Credits used and remaining are in `docs/COSTS.md`. Gnani publishes no prices, so credits are UNVERIFIED until read from the dashboard.
+- Not built: voice recording in the web UI, measured voice teach-back rates, the reliability estimator.
+
+## How this was built
+
+Claude Code assisted with the code under Yadhu's direction. Engineering control was kept with a diary (`docs/DIARY.md`), a decision record (`docs/DECISIONS.md`), an experiment log with numbers copied from real outputs (`docs/EXPERIMENTS.md`), tests on the pure logic, and a call cap on every paid API.
+
+## License
+
+MIT, see `LICENSE`.

@@ -1,5 +1,6 @@
 """API in replay mode: no network and no credits."""
 
+import pytest
 from fastapi.testclient import TestClient
 
 from tinytalk.api import app
@@ -65,3 +66,15 @@ def test_curve_404_until_built_and_picker_grid() -> None:
     grid = client.get("/api/picker", params={"lang": "en", "text": TEXT}).json()
     assert len(grid) == 12
     assert {g["tier"] for g in grid} <= {"A", "B", "C"}
+
+
+def test_live_mode_needs_a_token(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("LIVE", "1")
+    monkeypatch.setenv("TINYTALK_TOKEN", "secret")
+    body = {"text": TEXT, "lang": "en"}
+    assert client.post("/api/send", json=body).status_code == 401
+    assert (
+        client.post("/api/send", json=body, headers={"X-Tinytalk-Token": "nope"}).status_code == 401
+    )
+    monkeypatch.delenv("TINYTALK_TOKEN")
+    assert client.post("/api/send", json=body, headers={"X-Tinytalk-Token": "x"}).status_code == 401

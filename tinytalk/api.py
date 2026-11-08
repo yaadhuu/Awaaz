@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -42,7 +42,9 @@ def live() -> bool:
     return os.environ.get("LIVE") == "1"
 
 
+@lru_cache
 def gnani() -> Gnani:
+    """One shared client per process, so the request lock and the call cap cover every request."""
     c = cfg()
     return Gnani(
         c["paths"]["cache"],
@@ -50,6 +52,15 @@ def gnani() -> Gnani:
         replay=not live(),
         max_calls=c["credits"]["max_calls"],
     )
+
+
+def require_token(x_tinytalk_token: str | None = Header(default=None)) -> None:
+    """In LIVE mode a request can spend credits, so it must carry the TINYTALK_TOKEN secret."""
+    token = os.environ.get("TINYTALK_TOKEN")
+    if live() and (not token or x_tinytalk_token != token):
+        raise HTTPException(
+            401, "LIVE mode needs the X-Tinytalk-Token header (set TINYTALK_TOKEN)."
+        )
 
 
 class SendRequest(BaseModel):
@@ -145,7 +156,7 @@ def samples(lang: Lang) -> list[dict[str, Any]]:
     ]
 
 
-@app.post("/api/send")
+@app.post("/api/send", dependencies=[Depends(require_token)])
 def send(req: SendRequest) -> SendResponse:
     truth = extract(req.text)
     c = send_facts(truth, make_link(req, "C"))
