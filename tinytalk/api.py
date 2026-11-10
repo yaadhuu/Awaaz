@@ -33,6 +33,19 @@ from tinytalk.teachback import compare_facts
 from tinytalk.textpack import make_dict, pack_facts, pack_transcript
 from tinytalk.tiers import link_seed, pick_tier, send_audio, send_facts, send_transcript
 
+if not shutil.which("ffmpeg"):
+    try:
+        import imageio_ffmpeg
+        _ffmpeg_binary = imageio_ffmpeg.get_ffmpeg_exe()
+        _ffmpeg_directory = Path(tempfile.gettempdir()) / "awaaz-bin"
+        _ffmpeg_directory.mkdir(exist_ok=True)
+        _ffmpeg_link = _ffmpeg_directory / "ffmpeg"
+        if not _ffmpeg_link.exists():
+            _ffmpeg_link.symlink_to(_ffmpeg_binary)
+        os.environ["PATH"] = str(_ffmpeg_directory) + os.pathsep + os.environ.get("PATH", "")
+    except (ImportError, OSError, RuntimeError):
+        pass  # The audio status endpoint reports processing unavailable.
+
 Lang = Literal["ml", "hi", "en"]
 CHARS_PER_SECOND = 12  # rough speech rate used only to estimate Tier A size when no audio exists
 
@@ -46,9 +59,20 @@ app.include_router(audio_router)
 
 @lru_cache
 def cfg() -> dict[str, Any]:
-    cfg_: dict[str, Any] = yaml.safe_load(
-        Path(os.environ.get("TINYTALK_CONFIG", "config.yaml")).read_text("utf-8")
-    )
+    root = Path(__file__).resolve().parent.parent
+    config_path = Path(os.environ.get("TINYTALK_CONFIG", str(root / "config.yaml")))
+    cfg_: dict[str, Any] = yaml.safe_load(config_path.read_text("utf-8"))
+    if os.environ.get("VERCEL"):
+        writable = Path(tempfile.gettempdir()) / "awaaz"
+        writable.mkdir(exist_ok=True)
+        cfg_["paths"]["cache"] = str(writable / "cache")
+        cfg_["paths"]["ledger"] = str(writable / "ledger.jsonl")
+        cfg_["paths"]["corpus"] = str(root / "data/corpus")
+        cfg_["live"]["limits_db"] = str(writable / "limits.sqlite")
+        cfg_["credits"]["calibration_file"] = str(writable / "calibration.json")
+        ledger = Path(cfg_["paths"]["ledger"])
+        if not ledger.exists() and (root / "results/ledger.jsonl").exists():
+            shutil.copyfile(root / "results/ledger.jsonl", ledger)
     return cfg_
 
 

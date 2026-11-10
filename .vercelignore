@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+.venv/
+.git/
+cache/
+brag-output/
+web/node_modules/
+web/test-results/
+web/playwright-report/
+docs/screenshots/
+results/lighthouse/
+assets/channel/
+tools/
