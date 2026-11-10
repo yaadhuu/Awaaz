@@ -57,6 +57,16 @@ app.add_middleware(CORSMiddleware, allow_origins=allow_origins, allow_methods=["
 app.include_router(audio_router)
 
 
+@app.middleware("http")
+async def cloud_public_routes(request: Request, call_next: Any) -> Any:
+    if (os.getenv("VERCEL") and request.method == "POST" and request.url.path.rstrip("/") in {
+        "/api/live/report", "/api/live/reply", "/api/live/readback", "/api/send", "/api/stt", "/api/tts",
+    }):
+        from starlette.responses import JSONResponse
+        return JSONResponse({"detail": "Use the public voice workspace for live requests on this deployment."}, status_code=403)
+    return await call_next(request)
+
+
 @lru_cache
 def cfg() -> dict[str, Any]:
     root = Path(__file__).resolve().parent.parent

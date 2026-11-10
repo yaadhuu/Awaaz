@@ -1,4 +1,4 @@
-# Deploying TinyTalk
+# Deploying Awaaz
 
 There are two editions of the web app. Both read the same exported results.
 
@@ -34,26 +34,14 @@ Python launcher: the Windows `Z:\\Gnani\\tinytalk\\api.py` path was embedded wit
 escaping, turning backslash sequences into control characters. Integrated Vercel routing
 and the Linux cloud build therefore remain unverified. No paid API calls were made.
 
-### Live hosting is not yet production-ready
+### Cloud runtime status
 
-This configuration establishes service discovery, builds and public routing; it does
-not finish the existing backend's migration to Vercel's runtime. Before enabling `LIVE=1`:
-
-- Package and verify Linux FFmpeg/Opus and Codec2 native dependencies. They are required
-  for uploads and audio processing; Python dependency installation alone is insufficient.
-- Replace local writable cache, ledger, calibration and SQLite usage limits with shared
-  persistent storage. Writing to temporary storage alone does not preserve global caps
-  across instances or restarts. The current paths in `config.yaml` are local paths.
-- Adapt the audio workspace's process-local clip store and locks to distributed operation.
-  Subsequent processing/STT/TTS requests may run on another instance. Maintain the existing
-  privacy rule: visitor audio must not be persisted. Configure a stable private
-  `AWAAZ_SESSION_SECRET` for visitor cookie signing across instances.
-- Verify upload/request size and duration limits against Vercel's selected runtime and plan.
-
-Once those items are resolved, set `GNANI_API_KEY` (a newly rotated key), `LIVE=1`, and
-`ACCESS_CODE` privately in the Vercel environment settings. Existing public workspace/live
-routes have their own visitor/reviewer limits; the legacy access code is not a universal
-login for every API route. Never commit the key or import a local `.env` indiscriminately.
+The production build is Ready on Vercel. The historical Windows local launcher
+issue above does not prevent the Linux cloud build. The runtime migration and
+required live-voice environment variables are documented in the production update
+below. Public model calls remain disabled until shared quotas are configured.
+Codec2 availability still depends on the native library in the chosen runtime;
+PCM and Opus use the bundled FFmpeg path.
 
 References: [Services](https://vercel.com/docs/services),
 [routing](https://vercel.com/docs/services/routing), and
@@ -100,3 +88,32 @@ cd web && npm run dev:live          # http://localhost:5173, proxies /api to :80
 3. Lower `live.daily_call_cap` for a public demo.
 4. Do not expose `results/ledger.jsonl` for writing; the API only reads and appends through `tinytalk/gnani.py`.
 5. Keep CORS limited (`tinytalk/api.py` allows only `http://localhost:5173` by default).
+
+
+## Awaaz Vercel production update
+
+Production URL: https://awaaz-gnani.vercel.app (project: `awaaz`).
+The API runtime bundle was reduced from over 500 MB to 36.7 MB by moving
+research-only dependencies into `uv sync --extra research`.
+FFmpeg is bundled through imageio-ffmpeg; runtime writes use `/tmp`.
+
+Live voice requires all of:
+- `GNANI_API_KEY` (secret, server-only)
+- `AWAAZ_SESSION_SECRET` (stable random secret, server-only)
+- `KV_REST_API_URL` and `KV_REST_API_TOKEN`, or the corresponding
+  `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`
+- `LIVE=1` and `AWAAZ_PUBLIC_LIVE=1`
+
+Redis atomically reserves visitor, IP, daily and lifetime attempt budgets.
+The lifetime reservation allows three upstream attempts per request and does not
+refund failures. The shared model mutex expires after four minutes.
+Signed preview receipts carry the processed audio back from the browser when a
+request reaches another server instance; they expire after 20 minutes. No visitor
+audio or transcript is persisted in Redis. Uploads are capped at 4 MB to leave
+room under Vercel's request envelope; decoded audio stays bounded at 30 seconds.
+Research paid endpoints are blocked on Vercel so they cannot bypass these limits.
+Local development continues to use SQLite counters.
+
+The live flags must remain disabled until Redis is connected. Provisioning the
+free Upstash integration requires the account owner to complete marketplace terms
+in Vercel; automatic paid upgrades should remain off.

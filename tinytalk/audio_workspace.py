@@ -9,6 +9,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import hmac
+import json
 import os
 import secrets
 import shutil
@@ -26,7 +27,7 @@ from fastapi import APIRouter, File, Form, HTTPException, Request, Response, Upl
 from pydantic import BaseModel, Field, ValidationError
 from starlette.concurrency import run_in_threadpool
 
-from tinytalk import codec
+from tinytalk import cloud_limits, codec
 from tinytalk.languages import LANG_CODES
 from tinytalk.linksim import Link
 
@@ -104,6 +105,49 @@ def _clip(clip_id: str, owner: str) -> Clip:
         if not found or found.owner != owner:
             raise HTTPException(404, "This audio preview expired. Process the audio again.")
         return found
+
+
+def _receipt(clip_id: str, clip: Clip) -> str:
+    payload = base64.urlsafe_b64encode(json.dumps({
+        "id": clip_id, "owner": clip.owner, "meta": clip.meta,
+        "sha": hashlib.sha256(clip.wav).hexdigest(), "expires": int(time.time()) + TTL,
+    }, separators=(",", ":")).encode()).decode()
+    return payload + "." + hmac.new(_secret, payload.encode(), hashlib.sha256).hexdigest()
+
+
+def _restore(clip_id: str, owner: str, receipt: str, audio_b64: str) -> Clip:
+    try:
+        return _clip(clip_id, owner)
+    except HTTPException:
+        pass
+    try:
+        payload, signature = receipt.split(".")
+        if not hmac.compare_digest(signature, hmac.new(_secret, payload.encode(), hashlib.sha256).hexdigest()):
+            raise ValueError("signature")
+        data = json.loads(base64.urlsafe_b64decode(payload))
+        wav = base64.b64decode(audio_b64, validate=True)
+        if (data["id"] != clip_id or data["owner"] != owner or data["expires"] < time.time()
+                or hashlib.sha256(wav).hexdigest() != data["sha"]):
+            raise ValueError("expired or mismatched preview")
+        clip = Clip(owner=owner, wav=wav, meta=data["meta"])
+        with _lock:
+            _prune()
+            _clips[clip_id] = clip
+        return clip
+    except (ValueError, KeyError, TypeError) as exc:
+        raise HTTPException(404, "This preview expired. Process the audio again.") from exc
+
+
+def _used(owner: str) -> int:
+    from tinytalk import api
+    return cloud_limits.used(owner) if os.getenv("VERCEL") else api.limit_tracker().visitor_calls_today(owner)
+
+
+def _model(request: Request, owner: str, kind: str, call: Any) -> tuple[Any, int]:
+    from tinytalk import api
+    with cloud_limits.model_lock():
+        remaining = _reserve(request, owner, kind)
+        return api.spend(None, call), remaining
 
 
 def decode_upload(data: bytes, mime: str, limit: float = 30) -> tuple[codec.Pcm, int]:
@@ -235,13 +279,14 @@ def status(request: Request, response: Response) -> dict[str, Any]:
     load_dotenv()
     owner = visitor(request, response)
     limit = api.cfg()["live"].get("per_visitor_daily", 4)
-    used = api.limit_tracker().visitor_calls_today(owner)
+    used = _used(owner) if not os.getenv("VERCEL") or cloud_limits.configured() else 0
     return {
         "available": True,
         "processing_available": bool(shutil.which("ffmpeg")),
         "live": api.live()
         and os.getenv("AWAAZ_PUBLIC_LIVE") == "1"
-        and bool(os.getenv("GNANI_API_KEY")),
+        and bool(os.getenv("GNANI_API_KEY"))
+        and (not os.getenv("VERCEL") or (cloud_limits.configured() and bool(os.getenv("AWAAZ_SESSION_SECRET")))),
         "remaining": max(0, limit - used),
         "limit": limit,
         "max_seconds": min(30, api.cfg()["live"].get("workspace_audio_seconds", 30)),
@@ -271,7 +316,7 @@ async def process(
         raise HTTPException(429, "The audio processor is busy. Try again in a few seconds.")
     try:
         if audio_file is not None:
-            data = await audio_file.read(api.cfg()["live"]["max_upload_bytes"] + 1)
+            data = await audio_file.read(min(4000000, api.cfg()["live"]["max_upload_bytes"]) + 1)
             mime = (audio_file.content_type or "").split(";")[0]
         elif sample_id:
             # Only an allowlisted local asset can be opened; never fetch arbitrary URLs.
@@ -283,8 +328,8 @@ async def process(
             data, mime = path.read_bytes(), "audio/mpeg"
         else:
             raise HTTPException(422, "Record, upload or choose an audio sample first.")
-        if len(data) > api.cfg()["live"]["max_upload_bytes"]:
-            raise HTTPException(413, "Audio exceeds the 5 MB upload limit.")
+        if len(data) > min(4000000, api.cfg()["live"]["max_upload_bytes"]):
+            raise HTTPException(413, "Audio exceeds the 4 MB upload limit.")
         limit = min(30, api.cfg()["live"].get("workspace_audio_seconds", 30))
         pcm, rate = await run_in_threadpool(decode_upload, data, mime, limit)
         try:
@@ -318,6 +363,7 @@ async def process(
                 _prune()
         return {
             "clip_id": fingerprint,
+            "receipt": _receipt(fingerprint, clip),
             "audio_b64": base64.b64encode(clip.wav).decode(),
             "content_type": "audio/wav",
             "meta": clip.meta,
@@ -344,6 +390,13 @@ def _reserve(request: Request, owner: str, kind: str) -> int:
     if not os.getenv("GNANI_API_KEY"):
         raise HTTPException(503, "The server's Gnani key is not configured.")
     api._cap_check(None, set_budget=False)
+    if os.getenv("VERCEL"):
+        ip = request.headers.get("x-vercel-forwarded-for", request.client.host if request.client else "unknown").split(",")[0].strip()
+        # Reserve the worst-case three API attempts against the committed budget baseline.
+        from tinytalk import credits
+        baseline = credits.summary(api.cfg()["credits"], credits.load_ledger("results/ledger.jsonl"), None)["calls"]
+        return cloud_limits.reserve(owner, hashlib.sha256(ip.encode()).hexdigest(), api.cfg(),
+                                    max(0, int(api.cfg()["credits"]["cap_calls"] - baseline)))
     allowed, reason = api.limit_tracker().check_and_record(
         request.client.host if request.client else "unknown",
         owner,
@@ -358,13 +411,15 @@ def _reserve(request: Request, owner: str, kind: str) -> int:
         max(
             0,
             api.cfg()["live"].get("per_visitor_daily", 4)
-            - api.limit_tracker().visitor_calls_today(owner),
+            - _used(owner),
         )
     )
 
 
 class TranscribeRequest(BaseModel):
     clip_id: str = Field(min_length=64, max_length=64)
+    receipt: str = Field("", max_length=8192)
+    audio_b64: str = Field("", max_length=4100000)
     language: str = "indic-auto"
     format: Literal["transcribe", "verbatim", "codemix", "transliterate"] = "transcribe"
     keyterms: str = Field("", max_length=500)
@@ -379,7 +434,7 @@ def transcribe(body: TranscribeRequest, request: Request, response: Response) ->
             422, "Select automatic detection or one of Prisma's ten supported languages."
         )
     owner = visitor(request, response)
-    clip = _clip(body.clip_id, owner)
+    clip = _restore(body.clip_id, owner, body.receipt, body.audio_b64)
     cache_key = f"{body.language}|{body.format}|{body.keyterms}"
     with clip.lock:
         if cache_key in clip.transcripts:
@@ -388,17 +443,16 @@ def transcribe(body: TranscribeRequest, request: Request, response: Response) ->
             result["remaining"] = max(
                 0,
                 api.cfg()["live"].get("per_visitor_daily", 4)
-                - api.limit_tracker().visitor_calls_today(owner),
+                - _used(owner),
             )
             return result
         # Prisma receives the decoded preview, upsampled to its 16 kHz input format.
         pcm, rate = codec.wav_to_pcm(clip.wav)
         wav = codec.pcm_to_wav(codec.resample(pcm, rate, 16000), 16000)
-        remaining = _reserve(request, owner, "stt")
         started = time.perf_counter()
         try:
-            result = api.spend(
-                None,
+            result, remaining = _model(
+                request, owner, "stt",
                 lambda: api.gnani().stt(
                     wav,
                     [body.language],
@@ -437,6 +491,8 @@ def transcribe(body: TranscribeRequest, request: Request, response: Response) ->
 
 class SpeakRequest(BaseModel):
     clip_id: str = Field(min_length=64, max_length=64)
+    receipt: str = Field("", max_length=8192)
+    audio_b64: str = Field("", max_length=4100000)
     text: str = Field(min_length=1, max_length=1000)
     language: str = "en-IN"
 
@@ -448,7 +504,7 @@ def speak(body: SpeakRequest, request: Request, response: Response) -> dict[str,
     if body.language not in LANG_CODES:
         raise HTTPException(422, "Choose a supported read-aloud language.")
     owner = visitor(request, response)
-    clip = _clip(body.clip_id, owner)
+    clip = _restore(body.clip_id, owner, body.receipt, body.audio_b64)
     key = hashlib.sha256(f"{body.language}|{body.text}".encode()).hexdigest()
     with clip.lock:
         if key in clip.speech:
@@ -458,13 +514,12 @@ def speak(body: SpeakRequest, request: Request, response: Response) -> dict[str,
                 "remaining": max(
                     0,
                     int(api.cfg()["live"].get("per_visitor_daily", 4))
-                    - api.limit_tracker().visitor_calls_today(owner),
+                    - _used(owner),
                 ),
             }
-        remaining = _reserve(request, owner, "tts")
         try:
-            audio = api.spend(
-                None,
+            audio, remaining = _model(
+                request, owner, "tts",
                 lambda: api.gnani().tts(
                     body.text,
                     body.language,

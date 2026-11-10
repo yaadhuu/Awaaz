@@ -6,7 +6,7 @@ import './workspace.css'
 interface VoiceSample { id: string; title: string; audio: string; language: string; duration: number; text: string | null; kind: string; category: string; source_url: string; license: string }
 interface ServiceStatus { available: boolean; processing_available: boolean; live: boolean; remaining: number; limit: number; max_seconds: number }
 interface Settings { codec: 'pcm' | 'codec2' | 'opus'; sample_rate: number; bit_depth: number; bitrate_kbps: number; loss_percent: number }
-interface Processed { clip_id: string; audio_b64: string; content_type: string; meta: { codec: string; sample_rate: number; bit_depth: number | null; bitrate_bps: number; duration_seconds: number; encoded_bytes: number; preview_wav_bytes: number; chunks: number; lost_chunks: number; loss_percent: number; loss_model: string; audio_sha256: string } }
+interface Processed { receipt: string; clip_id: string; audio_b64: string; content_type: string; meta: { codec: string; sample_rate: number; bit_depth: number | null; bitrate_bps: number; duration_seconds: number; encoded_bytes: number; preview_wav_bytes: number; chunks: number; lost_chunks: number; loss_percent: number; loss_model: string; audio_sha256: string } }
 interface Transcript { transcript: string; detected_language: string; model: string; format: string; elapsed_seconds: number; remaining: number; clip_id: string; audio_sha256: string; reused: boolean; source: string }
 interface HistoryEntry { result: Transcript; meta: Processed['meta'] }
 const base = import.meta.env.BASE_URL
@@ -119,7 +119,7 @@ export default function VoiceWorkspace() {
     const current = processed; const revision = generation.current
     setModelBusy(true); setError('')
     try {
-      const d = await api<Transcript>('transcribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clip_id: current.clip_id, language, format, keyterms }) })
+      const d = await api<Transcript>('transcribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clip_id: current.clip_id, receipt: current.receipt, audio_b64: current.audio_b64, language, format, keyterms }) })
       setStatus((s) => s ? { ...s, remaining: d.remaining } : s)
       setHistory((previous) => [{ result: d, meta: current.meta }, ...previous.filter((h) => h.result.clip_id !== d.clip_id || h.result.format !== d.format)].slice(0, 4))
       if (revision === generation.current) setResult(d)
@@ -132,7 +132,7 @@ export default function VoiceWorkspace() {
     if (!code) { setError('Choose the transcript language for Timbre. Prisma did not identify it for this output mode.'); return }
     setModelBusy(true); setError('')
     try {
-      const d = await api<{ audio_b64: string; content_type: string; remaining: number }>('speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clip_id: result.clip_id, text: result.transcript, language: code }) })
+      const d = await api<{ audio_b64: string; content_type: string; remaining: number }>('speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clip_id: result.clip_id, receipt: processed?.receipt, audio_b64: processed?.audio_b64, text: result.transcript, language: code }) })
       setSpeechUrl(audioUrl(d.audio_b64, d.content_type)); setStatus((s) => s ? { ...s, remaining: d.remaining } : s)
     } catch (e) { setError((e as Error).message); void api<ServiceStatus>('status').then(setStatus).catch(() => {}) } finally { setModelBusy(false) }
   }
@@ -150,7 +150,7 @@ export default function VoiceWorkspace() {
         <div id="vw-source-panel" role="tabpanel" className="vw-source-panel">
           {tab === 'sample' && <><label htmlFor="vw-sample">Choose a situation</label><select id="vw-sample" value={sampleId} onChange={(e) => { setSampleId(e.target.value); const s = samples.find((a) => a.id === e.target.value); if (s) setLanguage(s.language); setInputRevision((v) => v + 1) }} disabled={modelBusy}>{samples.map((s) => <option value={s.id} key={s.id}>{s.title} · {s.language.split('-')[0].toUpperCase()} · {s.duration}s</option>)}</select>{selected && <><p className="vw-sample-kind">{selected.kind}</p><audio aria-label="Source audio" controls preload="metadata" src={`${base}${selected.audio}`} /><details className="vw-reference"><summary>About this sample</summary><p lang={selected.language.split('-')[0]}>{selected.text ?? 'No verified reference transcript. Transcribe the recording with Prisma to inspect its actual output.'}</p><a href={selected.source_url} target="_blank" rel="noreferrer">Source · {selected.license} ↗</a></details></>}</>}
           {tab === 'record' && <div className="vw-recorder"><div className={`vw-record-orbit ${recording ? 'is-recording' : ''}`} aria-hidden="true"><span /></div><p>{recording ? `Listening · ${String(elapsed).padStart(2, '0')} / 30s` : file ? 'Your recording is ready.' : 'A message, in your own words.'}</p><button type="button" className="aw-button" onClick={() => recording ? stopRecording() : void startRecording()} disabled={modelBusy}>{recording ? 'Stop recording' : file ? 'Record again' : 'Start recording'} <span aria-hidden="true">{recording ? '■' : '●'}</span></button><small>Up to 30 seconds. Transcription runs after you stop; this is not streaming captions.</small></div>}
-          {tab === 'upload' && <label className="vw-upload"><span className="vw-upload-arrow" aria-hidden="true">↥</span><strong>{file?.name ?? 'Choose an audio recording'}</strong><span>WAV, MP3, WebM, OGG, FLAC or M4A<br />Up to 30 seconds · 5 MB</span><input type="file" accept="audio/*,.m4a,.webm" aria-label="Upload your audio" disabled={modelBusy} onChange={(e) => { const next = e.target.files?.[0]; if (next) { if (next.size > 5000000) { setError('Choose an audio file smaller than 5 MB.'); return }; setFile(next); setInputRevision((v) => v + 1); setLanguage('indic-auto') } }} /></label>}
+          {tab === 'upload' && <label className="vw-upload"><span className="vw-upload-arrow" aria-hidden="true">↥</span><strong>{file?.name ?? 'Choose an audio recording'}</strong><span>WAV, MP3, WebM, OGG, FLAC or M4A<br />Up to 30 seconds · 4 MB</span><input type="file" accept="audio/*,.m4a,.webm" aria-label="Upload your audio" disabled={modelBusy} onChange={(e) => { const next = e.target.files?.[0]; if (next) { if (next.size > 4000000) { setError('Choose an audio file smaller than 4 MB.'); return }; setFile(next); setInputRevision((v) => v + 1); setLanguage('indic-auto') } }} /></label>}
           {tab !== 'sample' && fileUrl && <audio key={inputRevision} aria-label="Your original recording" controls src={fileUrl} />}
         </div>
         <div className="vw-section-title"><span>02</span><h2>Change what travels.</h2></div>

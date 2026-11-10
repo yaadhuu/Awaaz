@@ -8,7 +8,7 @@
 
 Built for the Gnani hackathon · Powered by **Prisma v3.0** and **Timbre v3.0**
 
-[Explore the project](#the-experience) · [Run locally](#run-locally) · [Deployment](#deployment) · [Evidence](#evidence-and-validation)
+[Live website](https://awaaz-gnani.vercel.app) · [Explore the project](#the-experience) · [Run locally](#run-locally) · [Deployment](#deployment) · [Evidence](#evidence-and-validation)
 
 ![React](https://img.shields.io/badge/React-19-28392e?style=flat-square)
 ![FastAPI](https://img.shields.io/badge/API-FastAPI-28392e?style=flat-square)
@@ -47,7 +47,7 @@ The interface combines expressive editorial typography, Indian-language details,
 4. Select a language or automatic detection, then click **Transcribe received audio**.
 5. Compare results across settings and use **Read aloud with Timbre** to hear the transcript.
 
-Recordings/uploads support **up to 30 seconds and 5 MB**. Recording is live microphone capture followed by transcription after stopping; streaming partial captions are not implemented.
+Recordings/uploads support **up to 30 seconds and 4 MB**. Recording is live microphone capture followed by transcription after stopping; streaming partial captions are not implemented.
 
 ## Gnani at the centre
 
@@ -121,7 +121,7 @@ The original benchmark uses templated synthetic speech and seeded burst-loss sim
 - Audio previews do not spend model credits. Server-wide caps and per-IP request limits also apply.
 - Anonymous limits are not proof of unique human identity. Failed model attempts still count.
 
-The prototype uses a single-worker in-memory clip store. Shared/distributed deployment requires suitable ephemeral storage and a stable session-signing secret.
+Visitor clips stay in expiring server memory. A signed preview receipt lets another Vercel instance recover the processed waveform from the browser without persisting speech. Production requires a stable session-signing secret and shared Redis usage counters.
 
 ## Run locally
 
@@ -159,9 +159,9 @@ Use your shell or hosting dashboard to set them before starting the server. Lega
 
 The repository includes Vercel frontend/API service configuration. Import the repository with root directory **`.`**. See **[DEPLOY.md](docs/DEPLOY.md)** for routing and runtime requirements.
 
-**A static frontend deployment alone does not provide live voice processing.** The backend requires FFmpeg/Opus, Codec2 native dependencies, writable persistent usage/ledger storage and a single-worker clip lifecycle. The current Vercel configuration does not resolve those runtime/storage requirements automatically. Keep live mode disabled until the backend environment supports them.
+The Vercel API bundles FFmpeg, keeps writable runtime files under `/tmp`, and uses Upstash Redis for atomic visitor/IP/global limits and a cross-instance model mutex. Set `AWAAZ_SESSION_SECRET`, `GNANI_API_KEY`, Redis REST credentials, `LIVE=1` and `AWAAZ_PUBLIC_LIVE=1` in production. Without the shared quota configuration, public live speech stays disabled. Redis stores counters and a bounded lock, never visitor speech or transcripts.
 
-For a static showcase, build `web/` with `npm run build:replay` and publish `web/dist`. The story and saved audio remain available; live processing requires a reachable backend. No public production deployment is claimed here.
+For a static showcase, build `web/` with `npm run build:replay` and publish `web/dist`. The story and saved audio remain available; live processing requires a reachable backend. The website is deployed at **https://awaaz-gnani.vercel.app**. Live-model availability is shown in the workspace and depends on the production environment configuration.
 
 ## Technology
 
