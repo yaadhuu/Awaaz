@@ -2,6 +2,63 @@
 
 There are two editions of the web app. Both read the same exported results.
 
+## Vercel multi-service project
+
+Import the repository with project root `.`. The root `vercel.json` defines:
+
+- `app`: FastAPI at `tinytalk.api:app`, publicly routed only at `/api` and `/api/*`.
+- `web`: Vite in `web/`, built with `npm run build:live`, publicly routed at all other paths.
+  Its service-local routes serve existing files first and then `index.html`, so refreshing
+  BrowserRouter pages such as `/try` and `/inspect/results` works.
+
+Service rewrites preserve the original request path. Keep the existing `/api` prefixes
+in FastAPI and in the browser's fetch calls. Do not strip them or add another `/api` prefix.
+Saved JSON and audio under `/data` and `/assets` are served by `web`.
+
+There are **no internal service calls and no bindings** in this application. Vite emits
+browser JavaScript, which calls public same-origin `/api/*`; it has no server function
+that can consume a runtime binding. FastAPI calls the external Gnani API through
+`tinytalk/gnani.py`. Do not add a `VITE_*` variable containing a key or an internal URL.
+The localhost Vite proxy is for standalone local development only; Vercel routes API
+requests before they enter `web`.
+
+Run `vercel dev --local` from the repository root to test both services together without
+linking a cloud project. Leave `LIVE` unset for no-credit checks. Check `/api/health`, `/`,
+`/try`, `/inspect/results`, and `/data/meta.json`. Only the health URL should reach FastAPI.
+
+Local validation (10 Nov 2026): `npm run build:live` passed, 17 backend tests
+(`test_live_api.py` and `test_audio_workspace.py`) passed, and 3 mocked-live Playwright
+tests passed. `/api/health` returned 200 via FastAPI TestClient with live mode disabled.
+Vercel CLI 57.0.0 detected both services, but `vercel dev --local` failed in its generated
+Python launcher: the Windows `Z:\\Gnani\\tinytalk\\api.py` path was embedded without proper
+escaping, turning backslash sequences into control characters. Integrated Vercel routing
+and the Linux cloud build therefore remain unverified. No paid API calls were made.
+
+### Live hosting is not yet production-ready
+
+This configuration establishes service discovery, builds and public routing; it does
+not finish the existing backend's migration to Vercel's runtime. Before enabling `LIVE=1`:
+
+- Package and verify Linux FFmpeg/Opus and Codec2 native dependencies. They are required
+  for uploads and audio processing; Python dependency installation alone is insufficient.
+- Replace local writable cache, ledger, calibration and SQLite usage limits with shared
+  persistent storage. Writing to temporary storage alone does not preserve global caps
+  across instances or restarts. The current paths in `config.yaml` are local paths.
+- Adapt the audio workspace's process-local clip store and locks to distributed operation.
+  Subsequent processing/STT/TTS requests may run on another instance. Maintain the existing
+  privacy rule: visitor audio must not be persisted. Configure a stable private
+  `AWAAZ_SESSION_SECRET` for visitor cookie signing across instances.
+- Verify upload/request size and duration limits against Vercel's selected runtime and plan.
+
+Once those items are resolved, set `GNANI_API_KEY` (a newly rotated key), `LIVE=1`, and
+`ACCESS_CODE` privately in the Vercel environment settings. Existing public workspace/live
+routes have their own visitor/reviewer limits; the legacy access code is not a universal
+login for every API route. Never commit the key or import a local `.env` indiscriminately.
+
+References: [Services](https://vercel.com/docs/services),
+[routing](https://vercel.com/docs/services/routing), and
+[bindings](https://vercel.com/docs/services/bindings).
+
 ## Replay edition (static, offline, no credits)
 
 Everything comes from saved runs in `web/public/data/` (committed). No server and no API key.
