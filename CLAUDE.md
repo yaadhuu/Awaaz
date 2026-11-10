@@ -12,6 +12,7 @@ Project: TinyTalk sends voice messages over weak links by sending text instead o
 ## Rules
 
 - Test speech is synthetic, made with Timbre. Never record real people.
+- Live visitor audio is processed in memory, never stored, committed or used for evaluation.
 - The API key lives only in .env and is never committed.
 - Never claim a real radio test.
 - Report accuracy with intervals and show failures.

@@ -1,0 +1,15 @@
+{
+  "title": "Ham Contest Exchange",
+  "author": "Meisam",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Ham_Contest_Exchange.ogg",
+  "original_url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Ham_Contest_Exchange.ogg",
+  "license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "duration_seconds": 26,
+  "file": "ham-contest-exchange.ogg",
+  "accessed": "2026-11-10",
+  "description": "Real amateur-radio contest exchange recorded on 11 September 2017. Listening reference only; not an Indian emergency recording or an Awaaz benchmark. No Gnani processing or radio-field validation is claimed.",
+  "modified": false,
+  "web_file": "ham-contest-exchange.mp3",
+  "web_processing": "Transcoded to mono MP3 at 24 kHz, 64 kbps for browser compatibility. No content edits. Original Ogg retained."
+}

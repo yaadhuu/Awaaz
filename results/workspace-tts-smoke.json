@@ -1,0 +1,8 @@
+{
+  "http_status": 200,
+  "source": "gnani_live",
+  "model": "timbre-v3.0",
+  "input": "Public synthetic-drill text; not visitor speech",
+  "duration_seconds": 5.6,
+  "sample_rate": 16000
+}

@@ -1,0 +1,615 @@
+[
+  {
+    "id": "workspace-medical-en",
+    "title": "Medical assistance",
+    "lang": "en",
+    "text": "35 people need medical help at Aluva. The nearest hospital is 30 kilometres away. Doctors will arrive by 8 pm.",
+    "heard": "35 people need medical help at Aluva. The nearest hospital is 30 kilometers away. Doctors will arrive by 8 pm.",
+    "facts": {
+      "places": [
+        "aluva"
+      ],
+      "numbers": [
+        {
+          "value": 30,
+          "unit": "km"
+        },
+        {
+          "value": 35,
+          "unit": "people"
+        }
+      ],
+      "times": [
+        {
+          "hour": 8,
+          "period": "pm"
+        }
+      ],
+      "unrecognised": []
+    },
+    "audio": {
+      "original": "data/audio/workspace-medical-en.mp3",
+      "A0": "data/audio/workspace-medical-en_A0.mp3",
+      "A10": "data/audio/workspace-medical-en_A10.mp3",
+      "A20": "data/audio/workspace-medical-en_A20.mp3",
+      "A30": "data/audio/workspace-medical-en_A30.mp3"
+    },
+    "runs": {
+      "0": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2712,
+            "bytes_sent": 2940,
+            "delivered": true
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 22,
+            "bytes_sent": 26,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 11,
+            "delivered": true
+          }
+        ]
+      },
+      "10": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2712,
+            "bytes_sent": 2940,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 22,
+            "bytes_sent": 26,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 11,
+            "delivered": true
+          }
+        ]
+      },
+      "20": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2712,
+            "bytes_sent": 2940,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 22,
+            "bytes_sent": 104,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 44,
+            "delivered": false
+          }
+        ]
+      },
+      "30": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2712,
+            "bytes_sent": 2940,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 22,
+            "bytes_sent": 104,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 44,
+            "delivered": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "workspace-supply-en",
+    "title": "Supply dispatch",
+    "lang": "en",
+    "text": "Supplies needed at Pathanamthitta: 83 food packets and 642 litres of drinking water.",
+    "heard": "Supplies needed at Pathanamthitta: 83 food packets and 642 litres of drinking water.",
+    "facts": {
+      "places": [
+        "pathanamthitta"
+      ],
+      "numbers": [
+        {
+          "value": 83,
+          "unit": "food_packets"
+        },
+        {
+          "value": 642,
+          "unit": "litres"
+        }
+      ],
+      "times": [],
+      "unrecognised": []
+    },
+    "audio": {
+      "original": "data/audio/workspace-supply-en.mp3",
+      "A0": "data/audio/workspace-supply-en_A0.mp3",
+      "A10": "data/audio/workspace-supply-en_A10.mp3",
+      "A20": "data/audio/workspace-supply-en_A20.mp3",
+      "A30": "data/audio/workspace-supply-en_A30.mp3"
+    },
+    "runs": {
+      "0": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2208,
+            "bytes_sent": 2392,
+            "delivered": true
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 27,
+            "bytes_sent": 31,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 11,
+            "delivered": true
+          }
+        ]
+      },
+      "10": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2208,
+            "bytes_sent": 2392,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 27,
+            "bytes_sent": 31,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 11,
+            "delivered": true
+          }
+        ]
+      },
+      "20": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2208,
+            "bytes_sent": 2392,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 27,
+            "bytes_sent": 124,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 44,
+            "delivered": false
+          }
+        ]
+      },
+      "30": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2208,
+            "bytes_sent": 2392,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 27,
+            "bytes_sent": 124,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 44,
+            "delivered": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "workspace-boats-en",
+    "title": "Rescue coordination",
+    "lang": "en",
+    "text": "14 boats are near Wayanad. 142 people are on board.",
+    "heard": "14 boats are near Wayanad. 142 people are on board.",
+    "facts": {
+      "places": [
+        "wayanad"
+      ],
+      "numbers": [
+        {
+          "value": 14,
+          "unit": "boats"
+        },
+        {
+          "value": 142,
+          "unit": "people"
+        }
+      ],
+      "times": [],
+      "unrecognised": []
+    },
+    "audio": {
+      "original": "data/audio/workspace-boats-en.mp3",
+      "A0": "data/audio/workspace-boats-en_A0.mp3",
+      "A10": "data/audio/workspace-boats-en_A10.mp3",
+      "A20": "data/audio/workspace-boats-en_A20.mp3",
+      "A30": "data/audio/workspace-boats-en_A30.mp3"
+    },
+    "runs": {
+      "0": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 1392,
+            "bytes_sent": 1508,
+            "delivered": true
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 27,
+            "bytes_sent": 31,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 11,
+            "delivered": true
+          }
+        ]
+      },
+      "10": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 1392,
+            "bytes_sent": 1508,
+            "delivered": true
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 27,
+            "bytes_sent": 31,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 11,
+            "delivered": true
+          }
+        ]
+      },
+      "20": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 1392,
+            "bytes_sent": 1508,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 27,
+            "bytes_sent": 124,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 44,
+            "delivered": false
+          }
+        ]
+      },
+      "30": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 1392,
+            "bytes_sent": 1508,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 27,
+            "bytes_sent": 124,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 44,
+            "delivered": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "workspace-medical-hi",
+    "title": "Medical assistance",
+    "lang": "hi",
+    "text": "आलुवा में 35 लोगों को चिकित्सा सहायता चाहिए। सबसे नज़दीकी अस्पताल 30 किलोमीटर दूर है। डॉक्टर शाम 8 बजे तक पहुँचेंगे।",
+    "heard": "आलुआ में 35 लोगों को चिकित्सा सहायता चाहिए। सबसे नज़दीकी अस्पताल 30 km दूर है। डॉक्टर शाम 8 बजे तक पहुँचेंगे।",
+    "facts": {
+      "places": [],
+      "numbers": [
+        {
+          "value": 30,
+          "unit": "km"
+        },
+        {
+          "value": 35,
+          "unit": "people"
+        }
+      ],
+      "times": [
+        {
+          "hour": 8,
+          "period": "pm"
+        }
+      ],
+      "unrecognised": []
+    },
+    "audio": {
+      "original": "data/audio/workspace-medical-hi.mp3",
+      "A0": "data/audio/workspace-medical-hi_A0.mp3",
+      "A10": "data/audio/workspace-medical-hi_A10.mp3",
+      "A20": "data/audio/workspace-medical-hi_A20.mp3",
+      "A30": "data/audio/workspace-medical-hi_A30.mp3"
+    },
+    "runs": {
+      "0": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2736,
+            "bytes_sent": 2964,
+            "delivered": true
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 33,
+            "bytes_sent": 37,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 6,
+            "bytes_sent": 10,
+            "delivered": true
+          }
+        ]
+      },
+      "10": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2736,
+            "bytes_sent": 2964,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 33,
+            "bytes_sent": 37,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 6,
+            "bytes_sent": 10,
+            "delivered": true
+          }
+        ]
+      },
+      "20": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2736,
+            "bytes_sent": 2964,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 33,
+            "bytes_sent": 148,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 6,
+            "bytes_sent": 40,
+            "delivered": false
+          }
+        ]
+      },
+      "30": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2736,
+            "bytes_sent": 2964,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 33,
+            "bytes_sent": 148,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 6,
+            "bytes_sent": 40,
+            "delivered": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "workspace-supply-ml",
+    "title": "Supply dispatch",
+    "lang": "ml",
+    "text": "പത്തനംതിട്ട പ്രദേശത്ത് 83 ഭക്ഷണപ്പൊതികളും 642 ലിറ്റർ കുടിവെള്ളവും ആവശ്യമുണ്ട്.",
+    "heard": "പത്തനംതിട്ട പ്രദേശത്ത് 83 ഭക്ഷണപ്പൊതികളും 642 ലിറ്റർ കുടിവെള്ളവും. ആവശ്യമുണ്ട്, കുടിവെള്ളവും ആവശ്യമുണ്ട്.",
+    "facts": {
+      "places": [
+        "pathanamthitta"
+      ],
+      "numbers": [
+        {
+          "value": 83,
+          "unit": "food_packets"
+        },
+        {
+          "value": 642,
+          "unit": "litres"
+        }
+      ],
+      "times": [],
+      "unrecognised": []
+    },
+    "audio": {
+      "original": "data/audio/workspace-supply-ml.mp3",
+      "A0": "data/audio/workspace-supply-ml_A0.mp3",
+      "A10": "data/audio/workspace-supply-ml_A10.mp3",
+      "A20": "data/audio/workspace-supply-ml_A20.mp3",
+      "A30": "data/audio/workspace-supply-ml_A30.mp3"
+    },
+    "runs": {
+      "0": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2856,
+            "bytes_sent": 3096,
+            "delivered": true
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 36,
+            "bytes_sent": 40,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 11,
+            "delivered": true
+          }
+        ]
+      },
+      "10": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2856,
+            "bytes_sent": 3096,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 36,
+            "bytes_sent": 40,
+            "delivered": true
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 11,
+            "delivered": true
+          }
+        ]
+      },
+      "20": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2856,
+            "bytes_sent": 3096,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 36,
+            "bytes_sent": 160,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 44,
+            "delivered": false
+          }
+        ]
+      },
+      "30": {
+        "tiers": [
+          {
+            "tier": "A",
+            "payload_bytes": 2856,
+            "bytes_sent": 3096,
+            "delivered": false
+          },
+          {
+            "tier": "B",
+            "payload_bytes": 36,
+            "bytes_sent": 160,
+            "delivered": false
+          },
+          {
+            "tier": "C",
+            "payload_bytes": 7,
+            "bytes_sent": 44,
+            "delivered": false
+          }
+        ]
+      }
+    }
+  }
+]

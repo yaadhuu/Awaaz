@@ -1,0 +1,101 @@
+.voice-workspace { color: var(--aw-ink); }
+.vw-heading { display: flex; justify-content: space-between; align-items: end; gap: 3rem; margin-bottom: 2.5rem; }
+.vw-heading h1 { font-family: "Fraunces Variable", Georgia, serif; font-size: clamp(2.8rem, 5.5vw, 5rem); letter-spacing: -.03em; word-spacing: .08em; font-weight: 430; line-height: 1.12; }
+.vw-heading h1 em { color: var(--aw-accent); font-weight: 400; }
+.vw-heading > div > p:last-child { color: var(--aw-muted); margin-top: 1.5rem; font-size: 1.05rem; line-height: 1.7; }
+.vw-budget { border-left: 1px solid var(--aw-line); padding-left: 1.5rem; max-width: 17rem; font-size: .9rem; }
+.vw-budget strong { font-weight: 550; }
+.vw-budget p { font-size: 1rem; margin-top: .5rem; }
+.vw-budget small { display: block; color: var(--aw-muted); margin-top: .5rem; font-size: .8rem; line-height: 1.6; }
+.vw-server-dot { display: inline-block; background: var(--aw-accent); width: 7px; height: 7px; border-radius: 50%; margin-right: .5rem; }
+.vw-server-dot.is-live { background: var(--aw-dark); }
+.vw-flow { display: flex; align-items: center; gap: 1.5rem; padding-block: 1rem; border-block: 1px solid var(--aw-line); margin-bottom: 2rem; font-size: .85rem; }
+.vw-flow i { color: var(--aw-accent); font-style: normal; }
+.vw-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 3rem; }
+.vw-source { padding-right: 2rem; border-right: 1px solid var(--aw-line); }
+.vw-section-title { display: flex; gap: .9rem; align-items: baseline; margin: 1.5rem 0; }
+.vw-section-title > span { font-size: .75rem; color: var(--aw-accent); }
+.vw-section-title h2 { font-family: "Fraunces Variable", Georgia, serif; font-size: 1.75rem; font-weight: 430; letter-spacing: -.025em; line-height: 1.3; }
+.vw-tabs { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--aw-line); gap: .9rem; }
+.vw-tabs button { min-height: 44px; background: none; border: none; border-bottom: 2px solid transparent; padding: .6rem .1rem; font-size: .85rem; color: var(--aw-muted); cursor: pointer; }
+.vw-tabs button[aria-selected=true] { color: var(--aw-ink); border-color: var(--aw-accent); }
+.vw-tabs button:disabled { opacity: .5; cursor: wait; }
+.vw-source-panel { padding-block: 1.4rem; min-height: 13rem; }
+.voice-workspace label { display: block; font-size: .85rem; font-weight: 500; }
+.voice-workspace select, .voice-workspace input[type=text] { display: block; width: 100%; min-height: 46px; border: 1px solid var(--aw-line); border-radius: 0; background: var(--aw-sheet); color: var(--aw-ink); font-family: inherit; font-size: .95rem; padding: .6rem .7rem; margin-top: .45rem; }
+.voice-workspace select:disabled { opacity: .6; }
+.voice-workspace audio { width: 100%; height: 44px; display: block; margin-block: 1rem; }
+.vw-sample-kind { color: var(--aw-muted); font-size: .8rem; margin-top: .6rem; }
+.vw-reference, .vw-keyterms { font-size: .85rem; }
+.vw-reference summary, .vw-keyterms summary { cursor: pointer; min-height: 44px; padding-block: .6rem; text-decoration: underline; text-underline-offset: .2rem; }
+.vw-reference p { margin-block: .5rem; font-size: .95rem; line-height: 1.8; overflow-wrap: anywhere; }
+.vw-reference a { display: inline-block; min-height: 44px; padding-block: .6rem; font-size: .8rem; }
+.vw-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+.vw-controls select { font-size: .85rem; }
+.vw-controls label:first-child { grid-column: 1 / -1; }
+.vw-controls label:not(:first-child) { grid-column: span 1; }
+.vw-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.vw-loss { margin-top: 1.5rem; }
+.vw-loss label { display: flex; justify-content: space-between; }
+.vw-loss output { color: var(--aw-accent); font-variant-numeric: tabular-nums; }
+.vw-loss input { width: 100%; height: 44px; accent-color: var(--aw-accent); }
+.vw-loss > div { display: flex; justify-content: space-between; font-size: .75rem; color: var(--aw-muted); }
+.vw-reset { background: none; border: none; padding-block: .7rem; font-size: .85rem; min-height: 44px; color: var(--aw-accent); cursor: pointer; margin-top: .5rem; }
+.vw-preview { background: var(--aw-dark); color: var(--aw-dark-text); padding: 1.4rem; min-height: 12rem; }
+.vw-preview-label { display: flex; gap: .75rem; align-items: center; justify-content: space-between; font-size: .65rem; letter-spacing: .07em; }
+.vw-empty { font-size: .95rem; line-height: 1.75; color: var(--aw-muted); margin-block: 1.2rem; }
+.vw-preview .vw-empty, .vw-preview .vw-hint { color: var(--aw-dark-muted); }
+.vw-audio-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; padding-block: 1rem; border-bottom: 1px solid var(--aw-dark-line); }
+.vw-audio-metrics dt { font-size: .72rem; color: var(--aw-dark-muted); }
+.vw-audio-metrics dd { font-size: 1.5rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.vw-audio-metrics small { font-size: .72rem; }
+.vw-hint { font-size: .8rem; color: var(--aw-muted); line-height: 1.7; margin-top: .7rem; }
+.vw-download { display: inline-flex; min-height: 44px; align-items: center; font-size: .8rem; }
+.vw-recognition-options { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-top: 1.4rem; }
+.vw-keyterms { margin-top: .5rem; }
+.vw-keyterms p { color: var(--aw-muted); font-size: .8rem; padding-block: .5rem; }
+.vw-transcribe { width: 100%; margin-block: 1rem; }
+.voice-workspace button:disabled { opacity: .5; cursor: not-allowed; }
+.vw-transcript { border: 1px solid var(--aw-line); padding: 1.3rem; background: var(--aw-sheet); margin-top: .8rem; min-height: 12rem; }
+.vw-result-text { font-size: 1.15rem; line-height: 1.8; padding-block: 1.3rem; overflow-wrap: anywhere; }
+.vw-result-meta { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-size: .75rem; color: var(--aw-muted); }
+.vw-transcript .aw-text-link { font-size: .85rem; margin-top: .7rem; }
+.vw-speak-language { margin-top: 1rem; }
+.vw-recorder { text-align: center; padding-block: 1rem; }
+.vw-record-orbit { width: 70px; height: 70px; margin: auto; border: 1px solid var(--aw-line); border-radius: 50%; display: grid; place-items: center; }
+.vw-record-orbit span { width: 18px; height: 18px; border-radius: 50%; background: var(--aw-accent); }
+.vw-record-orbit.is-recording { border-color: var(--aw-accent); }
+.vw-record-orbit.is-recording span { animation: vw-record 1s ease-in-out infinite alternate; }
+@keyframes vw-record { to { transform: scale(.65); opacity: .5; } }
+.vw-recorder p { margin-block: 1rem; }
+.vw-recorder small { display: block; font-size: .8rem; color: var(--aw-muted); margin-top: 1rem; line-height: 1.6; }
+.vw-upload { display: flex !important; flex-direction: column; align-items: center; text-align: center; gap: .6rem; padding: 1.2rem; border: 1px dashed var(--aw-line); cursor: pointer; }
+.vw-upload-arrow { font-size: 2.3rem; color: var(--aw-accent); }
+.vw-upload strong { font-weight: 500; max-width: 100%; overflow-wrap: anywhere; }
+.vw-upload > span:not(:first-child) { font-size: .8rem; color: var(--aw-muted); line-height: 1.7; }
+.vw-upload input { max-width: 100%; font-size: .8rem; min-height: 44px; }
+.vw-error { display: flex; justify-content: space-between; gap: 1.5rem; padding: 1rem 1.2rem; border: 1px solid var(--aw-accent); color: var(--aw-accent); background: var(--aw-sheet); margin-bottom: 1rem; font-size: .95rem; }
+.vw-error button { background: none; border: 0; text-decoration: underline; cursor: pointer; flex-shrink: 0; min-height: 44px; }
+.vw-history { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--aw-line); }
+.vw-history-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.vw-history article { border-bottom: 1px solid var(--aw-line); padding-bottom: 1.5rem; }
+.vw-history .aw-eyebrow { font-size: .65rem; margin-bottom: .7rem; }
+.vw-history article > p:not(.aw-eyebrow) { line-height: 1.8; overflow-wrap: anywhere; font-size: 1rem; }
+.vw-history small { font-size: .75rem; color: var(--aw-muted); display: block; margin-top: .7rem; }
+.vw-method { border-top: 1px solid var(--aw-line); padding-top: 1.5rem; margin-top: 3rem; color: var(--aw-muted); font-size: .85rem; max-width: 85ch; line-height: 1.7; }
+.vw-method > p:first-child { color: var(--aw-ink); font-weight: 500; margin-bottom: .5rem; }
+.vw-method a { display: inline-flex; min-height: 44px; align-items: center; }
+@media (max-width: 800px) {
+  .vw-heading { align-items: start; flex-direction: column; gap: 1.5rem; }
+  .vw-heading h1 { font-size: clamp(2.8rem, 9vw, 4rem); }
+  .vw-budget { max-width: 100%; }
+  .vw-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .vw-source { border-right: 0; padding-right: 0; }
+  .vw-flow { gap: .65rem; font-size: .8rem; }
+  .vw-recognition-options { grid-template-columns: 1fr; }
+  .vw-history-grid { grid-template-columns: 1fr; }
+  .vw-preview-label { font-size: .75rem; }
+  .vw-audio-metrics dt, .vw-audio-metrics small, .vw-loss > div, .vw-hint, .vw-sample-kind, .vw-method { font-size: .875rem; }
+  .vw-preview { padding: 1.1rem; }
+}
+@media (prefers-reduced-motion: reduce) { .vw-record-orbit span { animation: none !important; } }

@@ -9,4 +9,5 @@ export default defineConfig({
   resolve: { alias: { '@': path.resolve(import.meta.dirname, './src') } },
   test: { environment: 'jsdom', setupFiles: ['./src/test-setup.ts'], include: ['src/**/*.test.{ts,tsx}'] },
   server: { proxy: { '/api': 'http://127.0.0.1:8000' } },
+  preview: { proxy: { '/api': 'http://127.0.0.1:8000' } },
 })

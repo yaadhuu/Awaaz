@@ -1,0 +1,81 @@
+{
+  "input": "Public synthetic 22.5-second composite drill; not a visitor recording",
+  "results": [
+    {
+      "settings": {
+        "codec_name": "pcm",
+        "loss_percent": 0
+      },
+      "meta": {
+        "codec": "pcm",
+        "sample_rate": 16000,
+        "bit_depth": 16,
+        "bitrate_bps": 256000,
+        "duration_seconds": 22.575,
+        "encoded_bytes": 722398,
+        "preview_wav_bytes": 722442,
+        "loss_percent": 0,
+        "chunks": 15050,
+        "lost_chunks": 0,
+        "loss_model": "48-byte payload packets; lost packets become silence.",
+        "seed": 2026,
+        "audio_sha256": "a430f89d711c565566a9e3d10007944c643755423c2d44ca0fca41323475eeea",
+        "source": "processed_audio",
+        "model_calls": 0
+      },
+      "http_status": 200,
+      "output": {
+        "transcript": "35 people need medical help at Aluva. The nearest hospital is 30 kilometers away. Doctors will arrive by 8 pm. Supplies needed at Pathanamthitta. 83 food packets and 642 litres of drinking water. 14 boats are near Wayanad. 142 people are on board.",
+        "source": "gnani_live",
+        "detected_language": "en-IN",
+        "format": "transcribe",
+        "model": "prisma-v3.0",
+        "elapsed_seconds": 2.4,
+        "clip_id": "20c93ef2b8ed57e64cc58868be9756af8891cc8df67777a8e6cb80f345819458",
+        "audio_sha256": "a430f89d711c565566a9e3d10007944c643755423c2d44ca0fca41323475eeea",
+        "model_input_sha256": "a430f89d711c565566a9e3d10007944c643755423c2d44ca0fca41323475eeea",
+        "remaining": 3,
+        "reused": false,
+        "note": "Identical transcripts can be correct: resampling or compression does not necessarily change recognised words."
+      }
+    },
+    {
+      "settings": {
+        "codec_name": "codec2",
+        "loss_percent": 40
+      },
+      "meta": {
+        "codec": "codec2",
+        "sample_rate": 8000,
+        "bit_depth": null,
+        "bitrate_bps": 2400,
+        "duration_seconds": 22.575,
+        "encoded_bytes": 6774,
+        "preview_wav_bytes": 361244,
+        "loss_percent": 40,
+        "chunks": 142,
+        "lost_chunks": 52,
+        "loss_model": "48-byte payload packets; lost packets become silence.",
+        "seed": 2026,
+        "audio_sha256": "ad75ad06762aa7776b49fb3a7f65f9ff186ba646aa5f417fa46824fc96b8a2b2",
+        "source": "processed_audio",
+        "model_calls": 0
+      },
+      "http_status": 200,
+      "output": {
+        "transcript": "People need medical help at the nearest hospital. Will arrive by 8 pm 142 liters of 14 142 people are on board.",
+        "source": "gnani_live",
+        "detected_language": "en-IN",
+        "format": "transcribe",
+        "model": "prisma-v3.0",
+        "elapsed_seconds": 0.74,
+        "clip_id": "f1fc2f33cb551ac436bd928783f6e246e537dddf28cdcf022c2a19a6dc663c7d",
+        "audio_sha256": "ad75ad06762aa7776b49fb3a7f65f9ff186ba646aa5f417fa46824fc96b8a2b2",
+        "model_input_sha256": "b1eaf96e8f84b046272dfe619a98640ae1083f192b05e06609e9ea416c99865a",
+        "remaining": 2,
+        "reused": false,
+        "note": "Identical transcripts can be correct: resampling or compression does not necessarily change recognised words."
+      }
+    }
+  ]
+}

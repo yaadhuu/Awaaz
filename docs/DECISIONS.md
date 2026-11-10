@@ -1,5 +1,9 @@
 # Decisions
 
+## Awaaz live workspace — 10 November 2026
+
+User feedback expands this pass to working voice capture/upload, all ten Prisma languages, real codec/sample-rate/bit-depth processing, and a scrollytelling upgrade. Lenis is added at the user's explicit request, lazy-loaded on the landing only and disabled for reduced motion; Motion drives continuous signal/message transforms. `/try` is now the voice workspace, while `/studio` retains the historical benchmark UI. A separate `/api/audio/*` router keeps audio previews free and only sends decoded received audio to Gnani. Four public model requests per signed visitor cookie per UTC day are enforced in SQLite, with existing server-wide caps. Visitor results bypass persistent Gnani disk caching and are reused only in bounded expiring memory. A missing/failed live model returns a visible error; it never substitutes an unrelated saved flood transcript. Native Codec2 stays fixed at 8 kHz/2.4 kbps; PCM exposes 8/16-bit and 8–48 kHz; Opus exposes actual encoding bitrate, with explicitly labelled post-decode loss emulation. One process is used for this in-memory prototype; a multi-worker/distributed deployment would require shared ephemeral storage and a persistent session-signing secret.
+
 One line per decision: date | decision | alternatives rejected | reason.
 
 | Date | Decision | Alternatives rejected | Reason |
@@ -42,3 +46,6 @@ One line per decision: date | decision | alternatives rejected | reason.
 | 2026-11-09 | Recording in the Studio uses MediaRecorder (30 s auto-stop) with silence trimmed on the server by ffmpeg; `@ricky0123/vad-web` removed. | vad-web in the browser. | vad-web loads model files from a CDN and adds weight; server trimming is enough for the brief. |
 | 2026-11-09 | Teach-back rates measured on saved transcripts with deliberate one-fact edits (E6). | Spoken read-backs through Timbre and Prisma. | No credits; spoken version needs about 2 calls per message and approval. |
 | 2026-11-09 | Hindi and Malayalam UI strings load only when chosen; `web/src/locales/`. Reviewed list in `docs/review/ui_strings_review.md`. | All languages in the first bundle. | Lighter first load. |
+# Awaaz frontend decision — 10 November 2026
+
+The public brand is now Awaaz, with the user-selected tagline “Every voice deserves to reach.” The Python package and historical benchmark filenames remain `tinytalk`. The landing uses an original editorial radio/message illustration and existing React/Motion dependencies, with Fraunces and Anek already installed. Native scrolling and reduced-motion fallbacks take precedence over decorative effects. Primary demo and evidence routes reuse existing functional pages. A CC0 real-radio recording is an optional listening reference, clearly separate from the synthetic evaluation corpus. No new dependencies or paid model calls were needed. Design and verification details are in `AWAAZ_FRONTEND_QA.md`.

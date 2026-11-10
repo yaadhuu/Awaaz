@@ -1,0 +1,51 @@
+{
+  "as_of": "2026-11-10",
+  "source_file": "tinytalk/linkstates.py",
+  "description": "L0 to L3 emergency link state hierarchy and tier mapping",
+  "states": [
+    {
+      "id": "L0",
+      "level": 0,
+      "name": "Nominal",
+      "delivery_mode": "full_audio",
+      "tier": "A",
+      "subtitle": "Audio and captions — full quality",
+      "demo_rate_kbps": 10,
+      "demo_loss_percent": 0,
+      "demo_note": "demo preset, not a field measurement"
+    },
+    {
+      "id": "L1",
+      "level": 1,
+      "name": "Degraded",
+      "delivery_mode": "transcript",
+      "tier": "B",
+      "subtitle": "Key words and text — compressed transcript",
+      "demo_rate_kbps": 5,
+      "demo_loss_percent": 10,
+      "demo_note": "demo preset, not a field measurement"
+    },
+    {
+      "id": "L2",
+      "level": 2,
+      "name": "Critical",
+      "delivery_mode": "facts_only",
+      "tier": "C",
+      "subtitle": "Key facts only — about 7 bytes",
+      "demo_rate_kbps": 2,
+      "demo_loss_percent": 30,
+      "demo_note": "demo preset, not a field measurement"
+    },
+    {
+      "id": "L3",
+      "level": 3,
+      "name": "Outage",
+      "delivery_mode": "store_and_forward",
+      "tier": null,
+      "subtitle": "Held and retried — no Gnani call",
+      "demo_rate_kbps": null,
+      "demo_loss_percent": null,
+      "demo_note": "demo preset, not a field measurement"
+    }
+  ]
+}

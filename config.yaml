@@ -29,9 +29,14 @@ credits:
 
 live:
   daily_call_cap: 100             # live attempts per day across all users
+  public_daily_calls: 100         # public daily calls
+  per_visitor_daily: 4            # public model requests per visitor per day
   per_ip_per_minute: 6
-  max_upload_bytes: 5000000
-  max_audio_seconds: 30
+  reviewer_share: 0.3             # 30% reserved for reviewer code
+  max_upload_bytes: 5000000       # 5 MB
+  max_audio_seconds: 15           # 15 s per brief
+  workspace_audio_seconds: 30    # Prisma REST maximum; workspace recording/upload
+  limits_db: cache/limits.sqlite
   upload_types: [audio/wav, audio/x-wav, audio/wave, audio/mpeg, audio/ogg, audio/webm, audio/flac, audio/mp4]
 
 concurrency:

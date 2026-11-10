@@ -64,12 +64,14 @@ class Facts:
     places: tuple[str, ...] = ()
     numbers: tuple[tuple[int, str], ...] = ()
     times: tuple[tuple[int, str], ...] = ()
+    unrecognised: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "places": list(self.places),
             "numbers": [{"value": v, "unit": u} for v, u in self.numbers],
             "times": [{"hour": h, "period": p} for h, p in self.times],
+            "unrecognised": list(self.unrecognised),
         }
 
     @staticmethod
@@ -78,6 +80,7 @@ class Facts:
             tuple(sorted(d["places"])),
             tuple(sorted((n["value"], n["unit"]) for n in d["numbers"])),
             tuple(sorted((t["hour"], t["period"]) for t in d["times"])),
+            tuple(sorted(d.get("unrecognised", []))),
         )
 
 
@@ -110,6 +113,7 @@ def extract(text: str) -> Facts:
     tokens = _merge_number_words(norm.split())
     numbers: list[tuple[int, str]] = []
     times: list[tuple[int, str]] = []
+    unrecognised: list[str] = []
     for i, tok in enumerate(tokens):
         if not tok.isdigit():
             continue
@@ -125,7 +129,9 @@ def extract(text: str) -> Facts:
         unit = next((u for t in nxt for u, st in _UNITS.items() if _starts(t, st)), None)
         if unit:
             numbers.append((int(tok), unit))
-    return Facts(places, tuple(sorted(numbers)), tuple(sorted(times)))
+        elif nxt and len(nxt[0]) >= 2 and not nxt[0].isdigit():
+            unrecognised.append(nxt[0])
+    return Facts(places, tuple(sorted(numbers)), tuple(sorted(times)), tuple(sorted(unrecognised)))
 
 
 def score_facts(truth: Facts, hyp: Facts) -> dict[str, Any]:

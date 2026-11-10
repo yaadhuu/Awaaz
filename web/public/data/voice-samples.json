@@ -1,0 +1,98 @@
+[
+  {
+    "id": "workspace-dispatch-en",
+    "title": "Three updates. One field dispatch.",
+    "audio": "data/audio/workspace-dispatch-en.mp3",
+    "language": "en-IN",
+    "duration": 22.5,
+    "text": "35 people need medical help at Aluva. The nearest hospital is 30 kilometres away. Doctors will arrive by 8 pm. Supplies needed at Pathanamthitta: 83 food packets and 642 litres of drinking water. 14 boats are near Wayanad. 142 people are on board.",
+    "kind": "Saved Timbre speech · composite drill",
+    "category": "dispatch",
+    "source_url": "https://github.com/yaadhuu/Gnani_Hackathon",
+    "license": "Project sample"
+  },
+  {
+    "id": "workspace-medical-en",
+    "title": "Medical assistance",
+    "audio": "data/audio/workspace-medical-en.mp3",
+    "language": "en-IN",
+    "duration": 9.0,
+    "text": "35 people need medical help at Aluva. The nearest hospital is 30 kilometres away. Doctors will arrive by 8 pm.",
+    "kind": "Saved Timbre speech",
+    "category": "medical",
+    "source_url": "https://github.com/yaadhuu/Gnani_Hackathon",
+    "license": "Project sample"
+  },
+  {
+    "id": "workspace-supply-en",
+    "title": "Supply dispatch",
+    "audio": "data/audio/workspace-supply-en.mp3",
+    "language": "en-IN",
+    "duration": 7.4,
+    "text": "Supplies needed at Pathanamthitta: 83 food packets and 642 litres of drinking water.",
+    "kind": "Saved Timbre speech",
+    "category": "supply",
+    "source_url": "https://github.com/yaadhuu/Gnani_Hackathon",
+    "license": "Project sample"
+  },
+  {
+    "id": "workspace-boats-en",
+    "title": "Rescue coordination",
+    "audio": "data/audio/workspace-boats-en.mp3",
+    "language": "en-IN",
+    "duration": 4.6,
+    "text": "14 boats are near Wayanad. 142 people are on board.",
+    "kind": "Saved Timbre speech",
+    "category": "boats",
+    "source_url": "https://github.com/yaadhuu/Gnani_Hackathon",
+    "license": "Project sample"
+  },
+  {
+    "id": "workspace-medical-hi",
+    "title": "Medical assistance",
+    "audio": "data/audio/workspace-medical-hi.mp3",
+    "language": "hi-IN",
+    "duration": 9.1,
+    "text": "आलुवा में 35 लोगों को चिकित्सा सहायता चाहिए। सबसे नज़दीकी अस्पताल 30 किलोमीटर दूर है। डॉक्टर शाम 8 बजे तक पहुँचेंगे।",
+    "kind": "Saved Timbre speech",
+    "category": "medical",
+    "source_url": "https://github.com/yaadhuu/Gnani_Hackathon",
+    "license": "Project sample"
+  },
+  {
+    "id": "workspace-supply-ml",
+    "title": "Supply dispatch",
+    "audio": "data/audio/workspace-supply-ml.mp3",
+    "language": "ml-IN",
+    "duration": 9.5,
+    "text": "പത്തനംതിട്ട പ്രദേശത്ത് 83 ഭക്ഷണപ്പൊതികളും 642 ലിറ്റർ കുടിവെള്ളവും ആവശ്യമുണ്ട്.",
+    "kind": "Saved Timbre speech",
+    "category": "supply",
+    "source_url": "https://github.com/yaadhuu/Gnani_Hackathon",
+    "license": "Project sample"
+  },
+  {
+    "id": "ham-radio",
+    "title": "Real radio: a contest exchange",
+    "audio": "assets/radio/ham-contest-exchange.mp3",
+    "language": "en-IN",
+    "duration": 26,
+    "text": null,
+    "kind": "Real amateur radio · CC0 · Meisam",
+    "category": "radio",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Ham_Contest_Exchange.ogg",
+    "license": "CC0"
+  },
+  {
+    "id": "apollo13-radio",
+    "title": "Apollo 13: a real mission call",
+    "audio": "assets/radio/apollo13-problem.mp3",
+    "language": "en-IN",
+    "duration": 11.5,
+    "text": null,
+    "kind": "NASA mission audio, 1970. Historical reference; no endorsement or Awaaz field test.",
+    "category": "radio",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Apollo13problem.ogg",
+    "license": "Public domain (NASA)"
+  }
+]

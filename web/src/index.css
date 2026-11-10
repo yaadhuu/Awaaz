@@ -11,12 +11,12 @@
 /* Field manual palette. Contrast checked by scripts/check_contrast.py.
    Gold is for rules and ornament only, never for text. */
 :root {
-  --paper: #f4ecdb;
-  --card: #fbf6ea;
-  --ink: #171a2e;
-  --muted: #4a4a5c;
-  --rule: #d8c9a9;
-  --vermilion: #b3321f;
+  --paper: #f7f3e9;
+  --card: #fffcf5;
+  --ink: #28392e;
+  --muted: #62695d;
+  --rule: #d5d7c7;
+  --vermilion: #ae442e;
   --teal: #0f5c5a;
   --turmeric: #a06b10;
   --turmeric-ink: #7a4f00;
@@ -24,6 +24,26 @@
   --tier-a: #b3321f;
   --tier-b: #0f5c5a;
   --tier-c: #a06b10;
+
+  /* Phosphor signal & stage rhythm tokens */
+  --stage-ink: #0b0d17;
+  --stage-ink-card: #131728;
+  --stage-ink-text: #e8ecf4;
+  --stage-ink-muted: #8b92a8;
+  --stage-ink-rule: #232942;
+  --phosphor: #26e600;
+  --phosphor-dim: #188000;
+  --phosphor-glow: rgba(38, 230, 0, 0.2);
+
+  /* Fact group tag colors (>= 4.5:1 contrast against both dark and light backgrounds) */
+  --fact-place: #2563eb;
+  --fact-place-bg: rgba(37, 99, 235, 0.15);
+  --fact-qty: #d97706;
+  --fact-qty-bg: rgba(217, 119, 6, 0.15);
+  --fact-need: #dc2626;
+  --fact-need-bg: rgba(220, 38, 38, 0.15);
+  --fact-time: #059669;
+  --fact-time-bg: rgba(5, 150, 105, 0.15);
 }
 
 @theme inline {
@@ -40,6 +60,20 @@
   --color-tier-a: var(--tier-a);
   --color-tier-b: var(--tier-b);
   --color-tier-c: var(--tier-c);
+
+  --color-stage-ink: var(--stage-ink);
+  --color-stage-ink-card: var(--stage-ink-card);
+  --color-stage-ink-text: var(--stage-ink-text);
+  --color-stage-ink-muted: var(--stage-ink-muted);
+  --color-stage-ink-rule: var(--stage-ink-rule);
+  --color-phosphor: var(--phosphor);
+  --color-phosphor-dim: var(--phosphor-dim);
+
+  --color-fact-place: var(--fact-place);
+  --color-fact-qty: var(--fact-qty);
+  --color-fact-need: var(--fact-need);
+  --color-fact-time: var(--fact-time);
+
   --font-display: "Fraunces Variable", Georgia, serif;
   --font-sans: "Anek Latin Variable", "Anek Malayalam Variable", "Anek Devanagari Variable", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;

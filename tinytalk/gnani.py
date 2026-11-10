@@ -200,6 +200,7 @@ class Gnani:
         keyterms: list[str] | None = None,
         topic: str | None = None,
         previous_text: str | None = None,
+        use_cache: bool = True,
     ) -> dict[str, Any]:
         """Transcribe WAV bytes with Prisma; explicit model and format, cached by all inputs."""
         form: dict[str, str] = {
@@ -224,7 +225,7 @@ class Gnani:
             "characters": None,
             "processing_time": None,
         }
-        if key in self.cache:
+        if use_cache and key in self.cache:
             result: dict[str, Any] = self.cache[key]
             self._log(
                 {
@@ -246,7 +247,8 @@ class Gnani:
         )
         resp.raise_for_status()
         result = resp.json()
-        self.cache[key] = result
+        if use_cache:
+            self.cache[key] = result
         return result
 
     def tts(
@@ -256,6 +258,7 @@ class Gnani:
         voice: str,
         speed: float = 1.0,
         audio_config: dict[str, Any] | None = None,
+        use_cache: bool = True,
     ) -> bytes:
         """Synthesize speech with Timbre (one request at a time); returns audio bytes."""
         cfg = audio_config or DEFAULT_AUDIO_CONFIG
@@ -277,7 +280,7 @@ class Gnani:
             "detected_language_code": None,
             "processing_time": None,
         }
-        if key in self.cache:
+        if use_cache and key in self.cache:
             audio: bytes = self.cache[key]
             self._log(
                 {
@@ -294,5 +297,6 @@ class Gnani:
             raise ReplayMiss(f"replay mode: tts miss for {language}/{voice} ({len(text)} chars)")
         resp = self._post("/api/v1/tts/inference", row, json=body)
         resp.raise_for_status()
-        self.cache[key] = resp.content
+        if use_cache:
+            self.cache[key] = resp.content
         return resp.content

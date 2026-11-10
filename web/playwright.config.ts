@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test'
+import path from 'node:path'
 
 // replay: the static Replay build with the real exported results (no server).
 // live-fake: the live edition against a fake server (page.route), so no credits are ever spent.
@@ -7,6 +8,7 @@ export default defineConfig({
   timeout: 90_000,
   reporter: [['list']],
   webServer: [
+    { command: 'uv run uvicorn tinytalk.api:app --port 8000', cwd: path.resolve(import.meta.dirname, '..'), url: 'http://localhost:8000/api/health', reuseExistingServer: true, timeout: 120_000 },
     {
       command: 'npm run build:replay && npx vite preview --port 4173 --strictPort',
       url: 'http://localhost:4173',

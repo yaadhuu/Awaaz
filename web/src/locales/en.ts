@@ -1,5 +1,5 @@
 const en = {
-  brand: 'TinyTalk',
+  brand: 'Awaaz',
   nav: {
     home: 'Home', studio: 'Studio', link: 'Link lab', teachback: 'Teach-back', results: 'Results',
     playground: 'Playground', usage: 'Usage', library: 'Library', about: 'About', menu: 'Menu',
@@ -64,7 +64,7 @@ const en = {
   home: {
     kicker: 'A field manual for weak links',
     title: 'When the line is bad, send what matters.',
-    lede: 'In a flood, a voice message over a failing link arrives broken or not at all. TinyTalk measures the link and sends one of three things: the audio, the transcript, or only the facts. Then the receiver reads the facts back, and a wrong number is caught.',
+    lede: 'In a flood, a voice message over a failing link arrives broken or not at all. Awaaz measures the link and sends one of three things: the audio, the transcript, or only the facts. Then the receiver reads the facts back, and a wrong number is caught.',
     problemTitle: 'The problem, in three languages',
     tryIt: 'Turn the dial',
     tiersTitle: 'Three ways to send one message',

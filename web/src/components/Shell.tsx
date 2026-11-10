@@ -1,5 +1,5 @@
 import { AnimatePresence, m, useReducedMotion } from 'motion/react'
-import { useState, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { Segmented } from '@/components/Segmented'
@@ -8,6 +8,8 @@ import type { Lang } from '@/data/types'
 import { tone } from '@/lib/credits'
 import { useUsageSummary } from '@/lib/useData'
 import { cn } from '@/lib/utils'
+import '@/pages/story.css'
+import { useSmoothScroll } from '@/lib/useSmoothScroll'
 
 const LANGS: { value: Lang; label: string }[] = [
   { value: 'ml', label: 'മലയാളം' },
@@ -62,77 +64,41 @@ export function Shell({ lang, onLang, children }: { lang: Lang; onLang: (l: Lang
   const { t } = useTranslation()
   const loc = useLocation()
   const reduce = useReducedMotion()
-  const [open, setOpen] = useState(false)
-  const nav = (
-    <ul className="flex flex-col gap-1 lg:flex-row lg:flex-wrap lg:gap-x-5">
-      {PAGES.map((p) => (
-        <li key={p}>
-          <NavLink
-            to={`/${p}`}
-            onClick={() => setOpen(false)}
-            className={({ isActive }) =>
-              cn('inline-block py-1.5 no-underline lg:py-0.5', isActive ? 'border-b-2 border-vermilion font-semibold' : 'hover:underline')
-            }
-          >
-            {t(`nav.${p}`)}
-          </NavLink>
-        </li>
-      ))}
-    </ul>
-  )
+  const isLanding = loc.pathname === '/'
+  useSmoothScroll(isLanding)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [loc.pathname])
   return (
     <div lang={lang} className="min-h-screen">
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-ink focus:p-2 focus:text-paper">
-        {t('skip')}
-      </a>
-      <p className="border-b border-gold bg-ink px-4 py-1.5 text-center text-[0.8rem] text-paper">
-        {source.kind === 'api' ? t('mode.live') : t('mode.replay')}
-      </p>
-      <header className="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
-        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 border-b-[1.5px] border-ink pb-4">
-          <Link to="/" className="flex items-center gap-2 no-underline" aria-label="TinyTalk">
-            <Mark className="size-9" />
-            <span className="display text-[1.7rem]" lang="en">
-              TinyTalk
-            </span>
+      <a href="#main" onClick={(event) => { event.preventDefault(); const main = document.getElementById('main'); main?.focus({ preventScroll: true }); main?.scrollIntoView({ behavior: 'instant' }) }} className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-ink focus:p-2 focus:text-paper">{t('skip')}</a>
+      <header className="aw-site-header" lang="en">
+        <div className="aw-header-inner aw-wrap">
+          <Link to="/" className="aw-brand" aria-label="Awaaz home">
+            <svg className="aw-brand-symbol" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M3 18h4l3-10 5 17 5-20 4 17 3-9h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            <span className="aw-wordmark">awaaz</span><span className="aw-brand-language" lang="hi">आवाज़</span>
           </Link>
-          <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
-            <Segmented label={t('lang')} value={lang} options={LANGS} onChange={onLang} className="[&_button]:font-[system-ui]" />
-            <CreditMeter />
-          </div>
+          <nav aria-label="Main" className="aw-main-nav">
+            <NavLink to="/" end>The story</NavLink>
+            <NavLink to="/inspect">Behind the signal</NavLink>
+            <NavLink to="/try" className="aw-nav-cta">Try Awaaz <span aria-hidden="true">↗</span></NavLink>
+          </nav>
         </div>
-        <nav aria-label="Main" className="border-b border-rule py-2 text-[0.95rem]">
-          <button
-            type="button"
-            className="btn btn-ghost min-h-10 lg:hidden"
-            aria-expanded={open}
-            aria-controls="nav-list"
-            onClick={() => setOpen((o) => !o)}
-          >
-            {t('nav.menu')}
-          </button>
-          <div id="nav-list" className={cn(open ? 'block' : 'hidden', 'pt-2 lg:block lg:pt-0')}>
-            {nav}
-          </div>
-        </nav>
+        {!isLanding && <div className="aw-tool-bar aw-wrap">
+          <span>{loc.pathname === '/try' ? 'Voice workspace · 10 speech languages · live availability shown below' : source.kind === 'api' ? 'Live edition · Gnani-powered speech' : 'Saved research examples · no model calls on this page'}</span>
+          {loc.pathname !== '/try' && <Segmented label={t('lang')} value={lang} options={LANGS} onChange={onLang} className="[&_button]:font-[system-ui]" />}
+          <details><summary>Explore the tools</summary><nav className="aw-tool-menu" aria-label="Tools">{PAGES.map((p) => <NavLink key={p} to={`/${p}`}>{t(`nav.${p}`)}</NavLink>)}</nav></details>
+        </div>}
       </header>
-      <main id="main" className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6">
+      <main id="main" tabIndex={-1} className={isLanding ? '' : 'aw-page-main'}>
         <AnimatePresence mode="wait" initial={false}>
-          <m.div
-            key={loc.pathname}
-            initial={reduce ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduce ? undefined : { opacity: 0 }}
-            transition={{ duration: reduce ? 0 : 0.2 }}
-          >
-            {children}
-          </m.div>
+          <m.div key={loc.pathname} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={reduce ? undefined : { opacity: 0 }} transition={{ duration: reduce ? 0 : 0.18 }}>{children}</m.div>
         </AnimatePresence>
       </main>
-      <footer className="mx-auto max-w-6xl border-t-[1.5px] border-ink px-4 py-6 text-sm text-muted sm:px-6">
-        <p>{t('footer.simulated')}</p>
-        <p className="mt-1">{t('footer.licence')}</p>
-      </footer>
+      <footer className="aw-site-footer" lang="en"><div className="aw-wrap">
+        <div className="aw-footer-top"><Link to="/" className="aw-brand" aria-label="Awaaz home"><span className="aw-wordmark">awaaz</span></Link><p>Every voice deserves to reach.</p><a href="https://github.com/yaadhuu/Gnani_Hackathon" target="_blank" rel="noreferrer" className="aw-text-link">Made with care, in India <span aria-hidden="true">↗</span></a></div>
+        <div className="aw-footer-bottom"><p>An experimental prototype powered by Gnani Prisma & Timbre. Link conditions are simulated. Benchmark speech is synthetic; no real-radio validation is claimed.</p><Link to="/how">The method & the limits</Link><span>© 2026 Awaaz</span></div>
+      </div></footer>
     </div>
   )
 }

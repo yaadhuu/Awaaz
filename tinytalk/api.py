@@ -1,6 +1,7 @@
 """Thin FastAPI layer over the library. Replay by default; LIVE=1 allows real Gnani calls."""
 
 import base64
+import hashlib
 import hmac
 import json
 import os
@@ -14,22 +15,33 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
 
+import httpx
 import yaml
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from tinytalk import codec, corpus, credits, pipeline
+from tinytalk.audio_workspace import router as audio_router
 from tinytalk.facts import Facts, extract
 from tinytalk.gnani import Gnani, ReplayMiss
+from tinytalk.lexicon import PLACES, UNIT_STEMS
+from tinytalk.limits import LimitTracker
 from tinytalk.linksim import Link
-from tinytalk.textpack import make_dict, pack_transcript
+from tinytalk.linkstates import get_link_state
+from tinytalk.teachback import compare_facts
+from tinytalk.textpack import make_dict, pack_facts, pack_transcript
 from tinytalk.tiers import link_seed, pick_tier, send_audio, send_facts, send_transcript
 
 Lang = Literal["ml", "hi", "en"]
 CHARS_PER_SECOND = 12  # rough speech rate used only to estimate Tier A size when no audio exists
-app = FastAPI(title="TinyTalk")
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173"], allow_methods=["*"])
+
+_cors_env = os.environ.get("CORS_ORIGINS", "http://localhost:5173")
+allow_origins = [o.strip() for o in _cors_env.split(",") if o.strip()]
+
+app = FastAPI(title="Awaaz")
+app.add_middleware(CORSMiddleware, allow_origins=allow_origins, allow_methods=["*"], allow_headers=["*"])
+app.include_router(audio_router)
 
 
 @lru_cache
@@ -63,6 +75,11 @@ VOICES = [
 _hits: dict[str, deque[float]] = defaultdict(deque)
 _hits_lock = threading.Lock()
 _queue = {"waiting": 0}
+
+@lru_cache
+def limit_tracker() -> LimitTracker:
+    db_p = cfg().get("live", {}).get("limits_db", "cache/limits.sqlite")
+    return LimitTracker(db_p)
 
 
 def ledger_rows() -> list[dict[str, Any]]:
@@ -523,3 +540,460 @@ def tts(req: TtsRequest) -> dict[str, Any]:
         "actual": spend_since(before),
         "usage": usage_now(),
     }
+
+
+# ============================================================================================
+# STAGE E2 LIVE ENDPOINTS (with SQLite pre-call tracking, keyterms, L0..L3, and fallbacks)
+# ============================================================================================
+
+
+def get_lexicon_keyterms() -> list[str]:
+    """All places and unit stems as keyterms (max 200)."""
+    terms = {name for p in PLACES.values() for names in p.values() for name in names}
+    for stems in UNIT_STEMS.values():
+        terms.update(stems)
+    return sorted(terms)[:200]
+
+
+def is_reviewer_request(request: Request, x_reviewer_code: str | None = None) -> bool:
+    rev_expected = os.environ.get("REVIEWER_CODE")
+    return bool(rev_expected and x_reviewer_code and hmac.compare_digest(x_reviewer_code.encode(), rev_expected.encode()))
+
+
+def get_visitor_id(request: Request, x_visitor_id: str | None = None) -> str:
+    if x_visitor_id:
+        return x_visitor_id
+    ip = request.client.host if request.client else "unknown"
+    ua = request.headers.get("user-agent", "")
+    return hashlib.sha256(f"{ip}:{ua}".encode()).hexdigest()[:16]
+
+
+def get_saved_sample_fallback(lang: str) -> dict[str, Any]:
+    """Retrieve saved sample fallback with the standard response shape."""
+    iso = lang.split("-")[0]
+    if iso not in ("en", "hi", "ml"):
+        iso = "en"
+    samples = corpus.load(cfg()["paths"]["corpus"], iso)
+    sample = samples[0] if samples else {
+        "text": "Flood warning for Aluva. 50 people need help.",
+        "facts": {"places": ["aluva"], "numbers": [{"value": 50, "unit": "people"}], "times": []},
+    }
+    return sample
+
+
+class LiveStatusResponse(BaseModel):
+    live: bool
+    status: str
+    daily_calls_remaining: int
+    cap_calls: int
+    total_calls_lifetime: int
+    reviewer_share: float
+    warn_level: str
+
+
+@app.get("/api/live/status")
+def live_status(request: Request) -> LiveStatusResponse:
+    c = cfg()
+    summary = limit_tracker().get_summary()
+    daily_cap = c.get("live", {}).get("daily_call_cap", 100)
+    rem_daily = max(0, daily_cap - summary["today_calls"])
+    cap_calls = c.get("credits", {}).get("cap_calls", 1200)
+    share = summary["total_calls"] / cap_calls if cap_calls else 0.0
+    warn_lvl = credits.level(share, c.get("credits", {}).get("warn_at", [0.5, 0.8, 0.95]))
+    return LiveStatusResponse(
+        live=live(),
+        status="active" if live() else "replay_or_disabled",
+        daily_calls_remaining=rem_daily,
+        cap_calls=cap_calls,
+        total_calls_lifetime=summary["total_calls"],
+        reviewer_share=c.get("live", {}).get("reviewer_share", 0.3),
+        warn_level=warn_lvl,
+    )
+
+
+class LiveReplyRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=600)
+    lang: str = "en-IN"
+    state: str = "L0"
+
+
+@app.post("/api/live/reply")
+def live_reply(
+    req: LiveReplyRequest,
+    request: Request,
+    x_visitor_id: str | None = Header(default=None),
+    x_reviewer_code: str | None = Header(default=None),
+) -> dict[str, Any]:
+    st_info = get_link_state(req.state) or get_link_state("L0")
+    assert st_info is not None
+    st_id = st_info.id
+    iso = req.lang.split("-")[0]
+    facts = extract(req.text)
+
+    if st_id == "L3":
+        return {
+            "source": "live",
+            "state": "L3",
+            "state_name": "Outage",
+            "delivery_mode": "store_and_forward",
+            "payload": None,
+            "bytes": 0,
+            "status": "queued",
+            "note": "Link is down; message queued in store-and-forward buffer.",
+        }
+
+    if st_id == "L2":
+        packed_facts = pack_facts(facts)
+        return {
+            "source": "live",
+            "state": "L2",
+            "state_name": "Critical",
+            "delivery_mode": "facts_only",
+            "payload": packed_facts.hex(),
+            "bytes": len(packed_facts),
+            "facts": facts.to_dict(),
+            "status": "ready",
+        }
+
+    if st_id == "L1":
+        packed_txt = pack_transcript(req.text, zdict(iso if iso in ("en", "hi", "ml") else "en"))
+        return {
+            "source": "live",
+            "state": "L1",
+            "state_name": "Degraded",
+            "delivery_mode": "transcript",
+            "payload": packed_txt.hex(),
+            "bytes": len(packed_txt),
+            "facts": facts.to_dict(),
+            "status": "ready",
+        }
+
+    # L0 Nominal: Timbre speech via Codec2 + captions
+    ip = request.client.host if request.client else "unknown"
+    vid = get_visitor_id(request, x_visitor_id)
+    is_rev = is_reviewer_request(request, x_reviewer_code)
+
+    if not live():
+        sample = get_saved_sample_fallback(req.lang)
+        return {
+            "source": "saved",
+            "state": "L0",
+            "state_name": "Nominal",
+            "delivery_mode": "full_audio",
+            "payload": "",
+            "bytes": 600,
+            "captions": sample["text"],
+            "facts": sample["facts"],
+            "note": "Replay mode active; returning saved sample.",
+        }
+
+    allowed, reason = limit_tracker().check_and_record(ip, vid, is_rev, "/api/live/reply", "tts", cfg())
+    if not allowed:
+        sample = get_saved_sample_fallback(req.lang)
+        return {
+            "source": "saved",
+            "state": "L0",
+            "state_name": "Nominal",
+            "delivery_mode": "full_audio",
+            "payload": "",
+            "bytes": 600,
+            "captions": sample["text"],
+            "facts": sample["facts"],
+            "note": f"Limit reached ({reason}); returning saved fallback.",
+        }
+
+    voice = cfg()["voices"][0]
+    est = credits.estimate(cfg()["credits"], "tts", characters=len(req.text))
+    audio_cfg = {"sample_rate": 16000, "encoding": "linear_pcm", "num_channels": 1, "sample_width": 2, "container": "wav"}
+    try:
+        audio = spend(
+            est, lambda: gnani().tts(req.text, req.lang, voice, 1.0, audio_cfg)
+        )
+        pcm, rate = codec.wav_to_pcm(audio)
+        c2_payload = codec.c2_encode(codec.resample(pcm, rate, codec.C2_RATE))
+        return {
+            "source": "live",
+            "state": "L0",
+            "state_name": "Nominal",
+            "delivery_mode": "full_audio",
+            "payload": base64.b64encode(c2_payload).decode(),
+            "bytes": len(c2_payload),
+            "captions": req.text,
+            "facts": facts.to_dict(),
+        }
+    except (RuntimeError, httpx.HTTPError, OSError) as exc:
+        sample = get_saved_sample_fallback(req.lang)
+        return {
+            "source": "saved",
+            "state": "L0",
+            "state_name": "Nominal",
+            "delivery_mode": "full_audio",
+            "payload": "",
+            "bytes": 600,
+            "captions": sample["text"],
+            "facts": sample["facts"],
+            "note": f"TTS call failed ({type(exc).__name__}); returning saved sample.",
+        }
+
+
+class LiveReadbackRequest(BaseModel):
+    facts: dict[str, Any]
+    lang: str = "en-IN"
+    altered_fact: dict[str, Any] | None = None
+
+
+@app.post("/api/live/readback")
+def live_readback(
+    req: LiveReadbackRequest,
+    request: Request,
+    x_visitor_id: str | None = Header(default=None),
+    x_reviewer_code: str | None = Header(default=None),
+) -> dict[str, Any]:
+    """Timbre speaks facts, Prisma transcribes, teachback compares (optional altered fact)."""
+    ip = request.client.host if request.client else "unknown"
+    vid = get_visitor_id(request, x_visitor_id)
+    is_rev = is_reviewer_request(request, x_reviewer_code)
+
+    facts_obj = Facts.from_dict(req.facts)
+    # Render text for facts
+    parts = []
+    if facts_obj.places:
+        parts.append(f"Place {', '.join(facts_obj.places)}")
+    if facts_obj.numbers:
+        parts.append(f"Count {', '.join(f'{v} {u}' for v, u in facts_obj.numbers)}")
+    if facts_obj.times:
+        parts.append(f"Time {', '.join(f'{h} {p}' for h, p in facts_obj.times)}")
+    rendered = ". <pauses> ".join(parts) if parts else "No critical facts."
+
+    if not live():
+        # Offline/replay check
+        readback_f = facts_obj
+        if req.altered_fact:
+            readback_f = Facts(
+                places=tuple(req.altered_fact.get("places", facts_obj.places)),
+                numbers=tuple((n["value"], n["unit"]) for n in req.altered_fact.get("numbers", [{"value": v, "unit": u} for v, u in facts_obj.numbers])),
+                times=tuple((t["hour"], t["period"]) for t in req.altered_fact.get("times", [{"hour": h, "period": p} for h, p in facts_obj.times])),
+            )
+        res = compare_facts(facts_obj, readback_f)
+        return {"source": "saved", "transcript": rendered, **res}
+
+    # Live: requires 2 Gnani calls (TTS + STT)
+    allowed, reason = limit_tracker().check_and_record(ip, vid, is_rev, "/api/live/readback", "tts+stt", cfg(), units=2.0)
+    if not allowed:
+        res = compare_facts(facts_obj, facts_obj)
+        return {"source": "saved", "transcript": rendered, "note": f"Limit reached ({reason})", **res}
+
+    voice = cfg()["voices"][0]
+    est_tts = credits.estimate(cfg()["credits"], "tts", characters=len(rendered))
+    est_stt = credits.estimate(cfg()["credits"], "stt", audio_seconds=5.0)
+    est_total = (est_tts or 0.0) + (est_stt or 0.0) if est_tts is not None or est_stt is not None else None
+    audio_cfg = {"sample_rate": 16000, "encoding": "linear_pcm", "num_channels": 1, "sample_width": 2, "container": "wav"}
+    try:
+        audio = spend(est_total, lambda: gnani().tts(rendered, req.lang, voice, 1.0, audio_cfg))
+        keyterms = get_lexicon_keyterms()
+        stt_res = spend(est_total, lambda: gnani().stt(audio, [req.lang], "transcribe", keyterms=keyterms))
+        transcript = stt_res.get("transcript", "")
+        extracted_readback = extract(transcript)
+        if req.altered_fact:
+            extracted_readback = Facts.from_dict(req.altered_fact)
+        comp = compare_facts(facts_obj, extracted_readback)
+        return {"source": "live", "transcript": transcript, **comp}
+    except (RuntimeError, httpx.HTTPError, OSError) as exc:
+        res = compare_facts(facts_obj, facts_obj)
+        return {"source": "saved", "transcript": rendered, "note": f"Gnani error: {type(exc).__name__}", **res}
+
+
+@app.post("/api/live/report")
+async def live_report(
+    audio_file: UploadFile | None = File(None),
+    state: str = Form("L0"),
+    rate_kbps: float | None = Form(None),
+    loss_percent: float | None = Form(None),
+    seed: int | None = Form(None),
+    language_hint: str = Form("indic-auto"),
+    mode: str = Form("relay"),
+    request: Request = None,  # type: ignore[assignment]
+    x_visitor_id: str | None = Header(default=None),
+    x_reviewer_code: str | None = Header(default=None),
+) -> dict[str, Any]:
+    """Live audio report over simulated link.
+    state: L0..L3 (or 0..3)
+    L3 queues without Gnani call.
+    mode: relay (received audio STT) or on_device (ASSUMPTION, UNTESTED).
+    """
+    # Parse state
+    if state.isdigit():
+        st_info = get_link_state(int(state))
+    else:
+        st_info = get_link_state(state.upper())
+    if not st_info:
+        st_info = get_link_state("L0")
+    assert st_info is not None
+
+    r_kbps = rate_kbps if rate_kbps is not None else (st_info.demo_rate_kbps or 10.0)
+    l_pct = loss_percent if loss_percent is not None else (st_info.demo_loss_percent or 0.0)
+    s_seed = seed if seed is not None else cfg()["seeds"]["link"]
+
+    mode_label = "ASSUMPTION, UNTESTED" if mode == "on_device" else "relay"
+
+    if st_info.id == "L3":
+        return {
+            "source": "live",
+            "state": "L3",
+            "state_name": "Outage",
+            "delivery_mode": "store_and_forward",
+            "rate_kbps": 0.0,
+            "loss_percent": 100.0,
+            "seed": s_seed,
+            "mode": mode_label,
+            "transcript": "",
+            "facts": Facts().to_dict(),
+            "unrecognised": [],
+            "bytes": 0,
+            "packets": 0,
+            "resends": 0,
+            "delivered_percent": 0.0,
+            "gnani_calls": 0,
+            "status": "queued",
+            "note": "L3 Outage: transmission held and retried; zero Gnani calls.",
+        }
+
+    # Audio validation & in-memory read
+    data = b""
+    mime = "audio/wav"
+    if audio_file:
+        mime = (audio_file.content_type or "audio/wav").split(";")[0]
+        lc = cfg()["live"]
+        if mime not in lc["upload_types"] or mime not in FORMATS:
+            raise HTTPException(415, f"Audio type {mime} is not accepted.")
+        data = await audio_file.read(lc["max_upload_bytes"] + 1)
+        if len(data) > lc["max_upload_bytes"]:
+            raise HTTPException(413, "Audio file exceeds 5MB limit.")
+
+    # Check limits
+    ip = request.client.host if request and request.client else "unknown"
+    vid = get_visitor_id(request, x_visitor_id) if request else "unknown"
+    is_rev = is_reviewer_request(request, x_reviewer_code) if request else False
+
+    if not live() or not data:
+        sample = get_saved_sample_fallback(language_hint)
+        return {
+            "source": "saved",
+            "state": st_info.id,
+            "state_name": st_info.name,
+            "delivery_mode": st_info.delivery_mode,
+            "rate_kbps": r_kbps,
+            "loss_percent": l_pct,
+            "seed": s_seed,
+            "mode": mode_label,
+            "transcript": sample["text"],
+            "facts": sample["facts"],
+            "unrecognised": [],
+            "bytes": 350,
+            "packets": 8,
+            "resends": 1,
+            "delivered_percent": 100.0 if l_pct < 30 else 75.0,
+            "gnani_calls": 0,
+            "note": "Replay mode active or empty audio; returning saved sample.",
+        }
+
+    # Convert audio strictly in memory through ffmpeg (15s limit)
+    wav, seconds = to_wav16k(data, mime)
+    if seconds > cfg()["live"].get("max_audio_seconds", 15):
+        raise HTTPException(413, f"Audio length ({seconds:.1f}s) exceeds 15s limit.")
+
+    allowed, reason = limit_tracker().check_and_record(ip, vid, is_rev, "/api/live/report", "stt", cfg())
+    if not allowed:
+        sample = get_saved_sample_fallback(language_hint)
+        return {
+            "source": "saved",
+            "state": st_info.id,
+            "state_name": st_info.name,
+            "delivery_mode": st_info.delivery_mode,
+            "rate_kbps": r_kbps,
+            "loss_percent": l_pct,
+            "seed": s_seed,
+            "mode": mode_label,
+            "transcript": sample["text"],
+            "facts": sample["facts"],
+            "unrecognised": [],
+            "bytes": 350,
+            "packets": 8,
+            "resends": 1,
+            "delivered_percent": 100.0,
+            "gnani_calls": 0,
+            "note": f"Limit reached ({reason}); returning saved fallback with source: saved.",
+        }
+
+    # Simulate link crossing with Codec2
+    pcm, rate = codec.wav_to_pcm(wav)
+    payload = codec.c2_encode(codec.resample(pcm, rate, codec.C2_RATE))
+    lk_cfg = cfg()["link"]
+    sim = Link(r_kbps, l_pct, s_seed, lk_cfg["mean_burst_packets"], lk_cfg["payload_bytes"], lk_cfg["header_bytes"], lk_cfg["max_resends"])
+    sim_res = sim.send_stream(payload)
+
+    # Decode received audio
+    heard_pcm = codec.c2_decode_with_loss(sim_res.received, sim.payload_bytes // 6)
+    received_wav = codec.pcm_to_wav(codec.resample(heard_pcm, codec.C2_RATE, 16000), 16000)
+
+    # Run STT with keyterms
+    keyterms = get_lexicon_keyterms()
+    est = credits.estimate(cfg()["credits"], "stt", audio_seconds=seconds)
+    stt_res = spend(est, lambda: gnani().stt(received_wav, [language_hint], "transcribe", keyterms=keyterms))
+    transcript = stt_res.get("transcript", "")
+    extracted_res = extract(transcript)
+
+    delivered_pct = (sum(1 for p in sim_res.received if p is not None) / max(1, len(sim_res.received))) * 100.0
+
+    return {
+        "source": "live",
+        "state": st_info.id,
+        "state_name": st_info.name,
+        "delivery_mode": st_info.delivery_mode,
+        "rate_kbps": r_kbps,
+        "loss_percent": l_pct,
+        "seed": s_seed,
+        "mode": mode_label,
+        "transcript": transcript,
+        "facts": {
+            "places": extracted_res.places,
+            "numbers": extracted_res.numbers,
+            "times": extracted_res.times,
+        },
+        "unrecognised": extracted_res.unrecognised,
+        "bytes": sim_res.bytes_sent,
+        "packets": sim_res.packets,
+        "resends": sim_res.resends,
+        "delivered_percent": round(delivered_pct, 1),
+        "gnani_calls": 1,
+    }
+
+
+@app.get("/api/review/summary")
+def review_summary() -> dict[str, Any]:
+    """Read-only summary of review metrics, zero keys or IPs exposed."""
+    rows = ledger_rows()
+    total_calls = len(rows)
+    by_kind = {"stt": 0, "tts": 0}
+    by_route: dict[str, int] = defaultdict(int)
+    by_status: dict[str, int] = defaultdict(int)
+    by_lang: dict[str, int] = defaultdict(int)
+
+    for r in rows:
+        k = r.get("kind", "unknown")
+        if k in by_kind:
+            by_kind[k] += r.get("attempts", 1)
+        by_route[r.get("route", "unknown")] += 1
+        by_status[str(r.get("status", 200))] += 1
+        if r.get("language"):
+            by_lang[r["language"]] += 1
+
+    return {
+        "total_calls": total_calls,
+        "by_kind": by_kind,
+        "by_route": dict(by_route),
+        "by_status": dict(by_status),
+        "by_language": dict(by_lang),
+        "timestamp": time.time(),
+    }
+

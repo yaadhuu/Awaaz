@@ -1,0 +1,17 @@
+{
+  "as_of": "2026-11-10",
+  "source": "Automated test suite runners (pytest and vitest)",
+  "python_tests": {
+    "total_passed": 83,
+    "test_files": 13,
+    "property_tests": "hypothesis-backed textpack & roundtrip tests",
+    "mocked_gnani_tests": "respx-mocked live API & limits"
+  },
+  "web_tests": {
+    "total_passed": 618,
+    "test_files": 4,
+    "golden_cases_evaluated": 120,
+    "golden_mismatches": 0,
+    "seeded_random_roundtrips": 500
+  }
+}

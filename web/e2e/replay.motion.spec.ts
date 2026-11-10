@@ -3,12 +3,14 @@ import { expect, test } from '@playwright/test'
 test.use({ reducedMotion: 'reduce' })
 
 test('with reduced motion nothing animates and every page stays reachable', async ({ page }) => {
-  await page.goto('/#/')
-  const nav = page.getByRole('navigation', { name: 'Main' })
+  await page.goto('/#/studio')
+  const nav = page.getByRole('navigation', { name: 'Tools' })
   for (const name of ['Studio', 'Link lab', 'Teach-back', 'Results', 'Playground', 'Usage', 'Library', 'About']) {
+    await page.locator('summary', { hasText: 'Explore the tools' }).evaluate((s) => { (s.parentElement as HTMLDetailsElement).open = true })
     await nav.getByRole('link', { name }).click()
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   }
+  await page.locator('summary', { hasText: 'Explore the tools' }).evaluate((s) => { (s.parentElement as HTMLDetailsElement).open = true })
   await nav.getByRole('link', { name: 'Link lab' }).click()
   await page.getByRole('radio', { name: '30%', exact: true }).click()
   await page.getByRole('slider', { name: 'Link speed' }).focus()

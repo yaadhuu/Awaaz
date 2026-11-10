@@ -1,5 +1,13 @@
 # Audio assets
 
+## Awaaz radio speech reference (10 November 2026)
+
+Additional workspace reference: `web/public/assets/radio/apollo13-problem.ogg` is NASA Apollo 13 historical mission audio, obtained from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Apollo13problem.ogg), whose file page identifies it as public-domain NASA material. The browser uses a mono MP3 transcode at 24 kHz/64 kbps, with no content edits. This 11.5-second recording is historical reference only: no NASA/ISRO endorsement or Awaaz radio validation is implied. An exact reference transcript is not supplied. The workspace also includes the existing 26-second CC0 amateur-radio exchange, a 22.5-second synthetic composite dispatch drill, and cached medical, supply and rescue samples. `scripts/export_voice_samples.py` and `export_story_examples.py` reuse cached Timbre speech; they never generate live model calls. Sample source/licence details are in `web/public/data/voice-samples.json`.
+
+At the user's request, a real radio speech reference is now included separately from the original synthetic evaluation corpus and noise beds. `web/public/assets/radio/ham-contest-exchange.ogg` is the unmodified 26-second **Ham Contest Exchange**, by Meisam, released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) on [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Ham_Contest_Exchange.ogg). Full source details are in the adjacent `credits.json`.
+
+The web player uses an MP3 transcode (mono, 24 kHz, 64 kbps) for browser compatibility, with no content edits; the original Ogg is retained. An exact speech transcript is unavailable and the player says so, pointing to paired synthetic speech/transcript examples instead. This is an amateur-radio listening reference, not an Indian emergency recording, a Gnani-processed result, or evidence of Awaaz working over real radio. No model calls were made to process it. The synthetic benchmark corpus remains separate. The original asset-selection notes below describe the earlier noise-bed collection.
+
 All radio-noise beds used by the web app (Link lab, Library) and by `scripts/make_channel_samples.py`. Rule from the brief: only CC0, public domain or CC BY; no NC, ND or unknown licences; no speech from real people. The full record (source URL, author, licence and URL, date accessed, sha256, duration, voiced-frame share, waveform peaks) is in `assets/manifest.json`. Files: `assets/beds/*.wav` (16 kHz mono, at most 30 s and 1 MB) and `web/public/assets/beds/*.mp3` (48 kbps for the web).
 
 | Bed | Source | Author | Licence | Length | Notes |
